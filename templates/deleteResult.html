@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content%}
+            <form action={{url_for("deleteResult", id=id)}} method="POST" class="card-body">
+                <div class="text-center">
+
+                    Sind Sie sicher, dass Sie das Ergebnis des Spiel <b>{{
+                    team1_name }}</b> gegen <b>{{team2_name}}</b> löschen wollen?
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-block btn-primary mb-3">Ergebnis Löschen</button>
+                    </div>
+                </div>
+            </form>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content%}
+<div class="text-center">
+    <h4>Ergebnisse</h4>
+    <table class="table">
+        <thead>
+            <th>Heim</th> <th>Gast</th> <th>Ergebnis</th> <th/>
+        </thead>
+        <tbody>
+                {% for r in rows %}
+                <tr>
+                    <td><a href={{ url_for("teamInfo", id=r.home_team.id) }}>{{ r.home_team.name }}</a></td>
+                    <td><a href={{ url_for("teamInfo", id=r.visiting_team.id) }}>{{ r.visiting_team.name }}</a></td>
+                    <td>{{ r.home_team_pts }} : {{ r.visiting_team_pts }}</td>
+                    <td>
+                        {% if current_user.is_authenticated and current_user.id == r.home_team.user.id %}
+                            <a href={{ url_for("deleteResult", id=r.id)}}>Löschen</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

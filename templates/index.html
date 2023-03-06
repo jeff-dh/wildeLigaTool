@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{%block menu%}
+    <a href="{{url_for('results')}}">Ergebnisse</a>
+    {% if current_user.is_authenticated %}
+        <a href="{{url_for('submitResult')}}">Ergebnis eintragen</a>
+        <a href="{{url_for('logout')}}">Logout</a>
+    {% else %}
+        <a href="{{url_for('login')}}">Sign in/Sign Up</a>
+    {% endif %}
+{% endblock%}
+
+{% block content%}
+<div class="text-center">
+    <h4>Tabelle</h4>
+    <table class="table">
+        <thead>
+            <th>#</th> <th>Team</th> <th>Spiele</th> <th>S</th> <th>S-</th> <th>N+</th> <th>N</th> <th>Pkt</th>
+        </thead>
+        <tbody>
+                {% for t in table %}
+                <tr>
+                    <td><b>{{ table.index(t) + 1 }}</b></td>
+                    <td><b><a href={{ url_for("teamInfo", id=t.id) }}>{{ t.name }}</a></b></td>
+                    <td><b>{{ t.numberOfResults }}</b></td>
+                    <td>{{ t.wins }}</td>
+                    <td>{{ t.drawWins }}</td>
+                    <td>{{ t.drawLoses }}</td>
+                    <td>{{ t.loses }}</td>
+                    <td><b>{{ t.pts }}</b></td>
+                </tr>
+                {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

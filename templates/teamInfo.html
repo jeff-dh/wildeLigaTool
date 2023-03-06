@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content%}
+<div class="text-center">
+    <h4>{{ team.name }}</h4>
+    {% if current_user.is_authenticated and current_user.id == team.user_id %}
+    <form action="{{ request.path }}" method="POST" class="card-body">
+        {{ form.csrf_token }}
+
+        {{ form.info(rows="15", class_="form-control",placeholder="Team-Info: Kontakt-Infos, Heimspiel-Ort,...") }}
+        <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-block btn-primary mb-3">Speichern</button>
+        </div>
+    </form>
+    {% else %}
+        {{ team.info }}
+    {% endif %}
+</div>
+{% endblock %}
