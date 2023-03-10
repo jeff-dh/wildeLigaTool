@@ -1,4 +1,3 @@
-import hashlib
 from flask import render_template, redirect, flash, request, url_for, session
 
 from sqlalchemy import and_, desc, func, or_
@@ -146,11 +145,10 @@ def register():
     form = register_form()
 
     if form.validate_on_submit():
-        pwCheck = "d8f12e1ccfd91d6c0550f57da96d0da463d76ce43996be2be0936dc1f2362768"
-        regPWHash = hashlib.sha256(form.registerPassword.data.encode()).hexdigest()
 
-        if pwCheck != regPWHash:
-            flash("Registrierungs-Passwort ist nicht korrekt", "warning")
+        from config import registerCode
+        if  form.registerPassword.data != registerCode:
+            flash("Registrierungs-Code ist nicht korrekt", "warning")
         else:
             try:
                 email = form.email.data.lower()

@@ -1,0 +1,2 @@
+secretKey = "secret!"
+registerCode = "code"
