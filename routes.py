@@ -25,8 +25,8 @@ def session_handler():
     session.permanent = True
     app.permanent_session_lifetime = timedelta(minutes=30)
 
-@app.route("/", methods=("GET", "POST"), strict_slashes=False)
-def index():
+@app.route("/standings", methods=("GET", "POST"), strict_slashes=False)
+def standings():
     numberOfResults = db.session.query(func.count(Game.id)).\
                         filter(or_(Game.home_team_id == Team.id,\
                                    Game.visiting_team_id == Team.id)).\
@@ -66,7 +66,7 @@ def index():
                              drawWon, drawLost, gamesLost, pts)\
                                     .order_by(desc("pts")).all()
 
-    return render_template("index.html", table=table)
+    return render_template("standings.html", table=table)
 
 
 @app.route("/deleteResult/<id>", methods=("GET", "POST"), strict_slashes=False)
@@ -114,6 +114,11 @@ def teamInfo(id):
     t.info = Markup(t.info)
     return render_template("teamInfo.html", team=t, form=form)
 
+@app.route("/", strict_slashes=False)
+@app.route("/info", strict_slashes=False)
+def info():
+    return render_template("info.html")
+
 @app.route("/login/", methods=("GET", "POST"), strict_slashes=False)
 def login():
     form = login_form()
@@ -125,7 +130,7 @@ def login():
             next_page = request.form.get('next_page')
             assert next_page
             if "None" in next_page:
-                return redirect(url_for("index"))
+                return redirect(url_for("info"))
             else:
                 return redirect(next_page)
 
@@ -179,7 +184,7 @@ def register():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('index'))
+    return redirect(url_for('info'))
 
 
 @app.route("/submitResult", methods=("GET", "POST"))
@@ -211,7 +216,7 @@ def submitResult():
             db.session.rollback()
             flash(f"An database error occured!", "danger")
 
-        return redirect(url_for("index"))
+        return redirect(url_for("standings"))
 
     return render_template("submitResult.html", form=form,
                            home_team=current_user.team.name, text="Submit Game")
