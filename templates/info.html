@@ -25,12 +25,10 @@
     solltet) ihr unter "Team Info" zumindestens eure Kontakt-Daten angeben,
     damit andere Teams euch kontaktieren können, um Spiele zu vereinbaren.<br>
     <br>
-    <b>Bzgl. Datenschutz: Seid euch darüber bewusst, dass eure unter TeamInfo
-    angegebenen (Kontakt-)Daten so lala geschütz sind! Sie sind nicht
-    öffentlich zugänglich, aber wenn da jemand wirklich rankommen will und
-    bereit ist einen gewissen Aufwand zu betreiben, kann ich für nichts
-    garantieren. Ausserdem hat natürlich jeder Zugriff der den
-    Registrierungs-Code kennt.</b> <br><br>
+    <b>Seid euch darüber bewusst, dass alle Leute die den Regisitrierungs-Code
+        kennen (oder erraten) eure bei der Registrierung angegebene
+        Mail-Adresse und die unter TeamInfo angegebenen (Kontakt-)Daten
+        einsehen können. </b> <br><br>
 
     Der Registrierungs-Code ist ein ganz simpler Zugangs-Schutz, damit sich
     nicht jeder Hans und Franz registrieren kann und unsere Liga voll spamen
@@ -41,10 +39,19 @@
     Team bzw. Spieler der Liga haben und sollte von dem bestehenden Team /
     Spieler den Registrierungs-Code erfahren, um sich dann damit anmelden zu
     können.<br><br>
+    {% if current_user.is_authenticated %}
+    Der aktuelle Registrierungs-Code lautet:   <b>{{ registerCode }}</b>
+    {% else %}
+    Wenn du angemeldet bist, wird dir hier der aktuelle Registrierungs-Code angezeigt.
+    {% endif %}
+
+    <br><br>
     <b>WICHTIG: Der Registrierungs-Code sollte nirgends
         (online) öffentlich zugänglich sein!</b>
 
     <br><br>
+
+
 
     <hr>
     <h4 class="text-center">Manifest / Regeln</h4><br>
@@ -127,10 +134,6 @@
             <br>
 
         <li>Handschuhe sind verboten.</li>
-
-        <br>
-        <li>Wenn (ein) Lüder Meister wird, muss er ne riesen Sause schmeißen! 😉</li>
-
     </ol>
 </div>
 {% endblock %}

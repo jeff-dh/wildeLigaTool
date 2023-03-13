@@ -11,6 +11,7 @@ from datetime import timedelta
 from app import create_app, db, login_manager, bcrypt
 from db import User, Team, Game
 from forms import login_form,register_form, submitResult_Form, teamInfo_Form
+from config import registerCode
 
 
 @login_manager.user_loader
@@ -23,6 +24,7 @@ app = create_app()
 def session_handler():
     session.permanent = True
     app.permanent_session_lifetime = timedelta(minutes=30)
+
 
 @app.route("/standings", methods=("GET", "POST"), strict_slashes=False)
 def standings():
@@ -116,7 +118,7 @@ def teamInfo(id):
 @app.route("/", strict_slashes=False)
 @app.route("/info", strict_slashes=False)
 def info():
-    return render_template("info.html")
+    return render_template("info.html", registerCode=registerCode)
 
 @app.route("/login/", methods=("GET", "POST"), strict_slashes=False)
 def login():
@@ -137,7 +139,7 @@ def login():
             flash("Invalid email or password!", "danger")
 
     return render_template("auth.html", form=form, text="Login",
-                           btn_action="Login")
+                           btn_action="Anmelden")
 
 
 @app.route("/register/", methods=("GET", "POST"), strict_slashes=False)
@@ -146,7 +148,6 @@ def register():
 
     if form.validate_on_submit():
 
-        from config import registerCode
         if  form.registerPassword.data != registerCode:
             flash("Registrierungs-Code ist nicht korrekt", "warning")
         else:
@@ -175,7 +176,7 @@ def register():
                 flash(f"An database error occured!", "danger")
 
     return render_template("auth.html", form=form, text="Create account",
-                           btn_action="Register account")
+                           btn_action="Team registrieren")
 
 
 @app.route("/logout")
