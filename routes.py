@@ -138,7 +138,7 @@ def login():
         else:
             flash("Invalid email or password!", "danger")
 
-    return render_template("login.html", form=form, text="Login",
+    return render_template("auth.html", form=form, text="Login",
                            btn_action="Einloggen")
 
 
