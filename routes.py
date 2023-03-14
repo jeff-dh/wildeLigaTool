@@ -5,7 +5,6 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from flask_bcrypt import check_password_hash
 from flask_login import login_user, current_user, logout_user, login_required
 
-from markupsafe import Markup
 from datetime import timedelta
 
 from app import create_app, db, login_manager, bcrypt
@@ -104,15 +103,14 @@ def teamInfo(id):
     t = db.session.query(Team).filter_by(id=id).first()
 
     if form.validate_on_submit():
-        t.info = form.info.data.replace("\n", "<br>")
+        t.info = form.info.data
         try:
             db.session.commit()
         except SQLAlchemyError:
             db.session.rollback()
             flash(f"An database error occured!", "danger")
 
-    form.info.data = t.info.replace("<br>", "\n")
-    t.info = Markup(t.info)
+    form.info.data = t.info
     return render_template("teamInfo.html", team=t, form=form)
 
 @app.route("/", strict_slashes=False)
@@ -138,8 +136,7 @@ def login():
         else:
             flash("Invalid email or password!", "danger")
 
-    return render_template("auth.html", form=form, text="Login",
-                           btn_action="Einloggen")
+    return render_template("login.html", form=form)
 
 
 @app.route("/register/", methods=("GET", "POST"), strict_slashes=False)
@@ -175,8 +172,7 @@ def register():
                 db.session.rollback()
                 flash(f"An database error occured!", "danger")
 
-    return render_template("auth.html", form=form, text="Create account",
-                           btn_action="Team anmelden")
+    return render_template("register.html", form=form)
 
 
 @app.route("/logout")

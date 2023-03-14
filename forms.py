@@ -1,5 +1,5 @@
 from wtforms import SelectField, StringField, PasswordField,\
-                    IntegerField, TextAreaField
+                    IntegerField, SubmitField, TextAreaField
 
 from flask_wtf import FlaskForm
 from wtforms.validators import InputRequired, Length, EqualTo, Email, NumberRange
@@ -10,6 +10,7 @@ from db import User, Team
 class login_form(FlaskForm):
     email = StringField(validators=[InputRequired(), Email(), Length(1, 64)])
     password = PasswordField(validators=[InputRequired(), Length(min=6, max=72)])
+    submit = SubmitField("Einloggen")
 
 class register_form(FlaskForm):
     email = StringField(validators=[InputRequired(), Email(), Length(1, 64)])
@@ -17,12 +18,14 @@ class register_form(FlaskForm):
     cpassword = PasswordField(
         validators=[
             InputRequired(),
-            Length(8, 72),
+            Length(6, 72),
             EqualTo("password", message="Passwords must match !"),
         ]
     )
-    teamname = StringField(validators=[InputRequired(), Length(1, 64)])
+    teamname = StringField(validators=[InputRequired(), Length(2, 64)])
     registerPassword = StringField(default="")
+
+    submit = SubmitField("Team anmelden")
 
     def validate_email(self, email):
         if User.query.filter_by(email=email.data).first():
@@ -36,7 +39,9 @@ class submitResult_Form(FlaskForm):
     visiting_team = SelectField(coerce=int, validators=[InputRequired()])
     home_team_pts = IntegerField(validators=[InputRequired(), NumberRange(min=0)], default=0)
     visiting_team_pts = IntegerField(validators=[InputRequired(), NumberRange(min=0)], default=0)
+    submit = SubmitField("Ergebnis eintragen")
 
 class teamInfo_Form(FlaskForm):
     info = TextAreaField()
+    submit = SubmitField("Speichern")
 

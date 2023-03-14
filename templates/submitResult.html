@@ -1,27 +1,25 @@
 {% extends "base.html" %}
 
 {% block content%}
-<div class="text-center">
-        <h4>Ergebnis eintragen</h4>
-        <form action="{{ request.path }}" method="POST" class="card-body">
-            {{ form.csrf_token }}
+    <h4>Ergebnis eintragen</h4>
+    <form action="{{ request.path }}" method="POST" class="card-body">
+        {{ form.csrf_token }}
 
-            <table class="table">
-                <tbody>
-                    <tr>
-                        <td> {{ home_team }} </td>
-                        <td> {{ form.home_team_pts(class_="form-control",placeholder="0")}} </td>
-                    </tr>
-                    <tr>
-                        <td> {{ form.visiting_team(class_="form-control",placeholder="Gast Mannschaft")}} </td>
-                        <td> {{ form.visiting_team_pts(class_="form-control",placeholder="0")}} </td>
-                    </tr>
-                </tbody>
-            </table>
+        <table class="w-100 mb-1">
+            <tbody>
+                <tr>
+                    <td> {{ home_team }} </td>
+                    <td> : </td>
+                    <td> {{ form.home_team_pts(class_="form-control",placeholder="0")}} </td>
+                </tr>
+                <tr>
+                    <td> {{ form.visiting_team(class_="form-control",placeholder="Gast Mannschaft")}} </td>
+                    <td> : </td>
+                    <td> {{ form.visiting_team_pts(class_="form-control",placeholder="0")}} </td>
+                </tr>
+            </tbody>
+        </table>
 
-            <div class="d-grid gap-2">
-                <button type="submit" class="btn btn-block btn-primary mb-3"> Spiel eintragen </button>
-            </div>
-        </form>
-</div>
+        {{ form.submit(class_="btn btn-primary") }}
+    </form>
 {% endblock %}

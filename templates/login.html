@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% from "utils.jinja" import errorBox %}
+
+{% block content%}
+    <form action="{{ request.path }}" method="POST" class="card-body">
+        <input type="hidden" value="{{ request.args.get('next') }}" name="next_page" id="next_page"/>
+
+        {{ form.csrf_token }}
+
+        {{ form.email(class_="form-control mb-1", placeholder="E-Mail") }}
+        {{ errorBox(form.email.errors) }}
+        {{ form.password(class_="form-control mb-1", placeholder="Password") }}
+        {{ errorBox(form.password.errors) }}
+        {{ form.submit(class_="btn btn-primary") }}
+    </form>
+{% endblock %}
