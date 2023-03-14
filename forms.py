@@ -9,7 +9,7 @@ from db import User, Team
 
 class login_form(FlaskForm):
     email = StringField(validators=[InputRequired(), Email(), Length(1, 64)])
-    password = PasswordField(validators=[InputRequired(), Length(min=8, max=72)])
+    password = PasswordField(validators=[InputRequired(), Length(min=6, max=72)])
 
 class register_form(FlaskForm):
     email = StringField(validators=[InputRequired(), Email(), Length(1, 64)])
