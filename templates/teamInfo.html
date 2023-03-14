@@ -8,7 +8,7 @@
     <br>
 
     {% if current_user.is_authenticated and current_user.id == team.user_id %}
-        <form action="{{ request.path }}" method="POST" class="card-body">
+        <form action="{{ request.path }}" method="POST">
             {{ form.csrf_token }}
 
             {{ form.info(rows="15", class_="form-control mb-1",

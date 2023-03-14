@@ -1,22 +1,18 @@
 {% extends "base.html" %}
 
-{% from "utils.jinja" import errorBox %}
+{% from "utils.jinja" import inputField %}
 
 {% block content%}
-    <form action="{{ request.path }}" method="POST" class="card-body">
+    <form action="{{ request.path }}" method="POST">
         {{ form.csrf_token }}
 
-        {{ form.email(class_="form-control mb-1", placeholder="E-Mail") }}
-        {{ errorBox(form.email.errors) }}
-        {{ form.password(class_="form-control mb-1", placeholder="Password") }}
-        {{ errorBox(form.password.errors) }}
-        {{ form.cpassword(class_="form-control mb-1", placeholder="Password bestätigen ") }}
-        {{ errorBox(form.cpassword.errors) }}
+        {{ inputField(form.email) }}
+        {{ inputField(form.password) }}
+        {{ inputField(form.cpassword) }}
         <hr>
-        {{ form.teamname(class_="form-control mb-1", placeholder="Team-Name") }}
-        {{ errorBox(form.teamname.errors) }}
-        {{ form.registerPassword(class_="form-control mb-1", placeholder="Registrierungs-Code") }}
-        {{ errorBox(form.registerPassword.errors) }}
+        {{ inputField(form.teamname) }}
+        {{ inputField(form.registerPassword) }}
+
         {{ form.submit(class_="btn btn-primary") }}
     </form>
 {% endblock %}

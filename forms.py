@@ -8,22 +8,22 @@ from db import User, Team
 
 
 class login_form(FlaskForm):
-    email = StringField(validators=[InputRequired(), Email(), Length(1, 64)])
-    password = PasswordField(validators=[InputRequired(), Length(min=6, max=72)])
+    email = StringField("E-Mail", validators=[InputRequired(), Email(), Length(1, 64)])
+    password = PasswordField("Passwort", validators=[InputRequired(), Length(min=6, max=72)])
     submit = SubmitField("Einloggen")
 
 class register_form(FlaskForm):
-    email = StringField(validators=[InputRequired(), Email(), Length(1, 64)])
-    password = PasswordField(validators=[InputRequired(), Length(6, 72)])
-    cpassword = PasswordField(
+    email = StringField("E-Mail", validators=[InputRequired(), Email(), Length(1, 64)])
+    password = PasswordField("Passwort", validators=[InputRequired(), Length(6, 72)])
+    cpassword = PasswordField("Passwort bestätigen",
         validators=[
             InputRequired(),
             Length(6, 72),
             EqualTo("password", message="Passwords must match !"),
         ]
     )
-    teamname = StringField(validators=[InputRequired(), Length(2, 64)])
-    registerPassword = StringField(default="")
+    teamname = StringField("Team-Name", validators=[InputRequired(), Length(2, 64)])
+    registerPassword = StringField("Registrierungs-Code", default="")
 
     submit = SubmitField("Team anmelden")
 
