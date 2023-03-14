@@ -138,8 +138,8 @@ def login():
         else:
             flash("Invalid email or password!", "danger")
 
-    return render_template("auth.html", form=form, text="Login",
-                           btn_action="Anmelden")
+    return render_template("login.html", form=form, text="Login",
+                           btn_action="Einloggen")
 
 
 @app.route("/register/", methods=("GET", "POST"), strict_slashes=False)
@@ -176,7 +176,7 @@ def register():
                 flash(f"An database error occured!", "danger")
 
     return render_template("auth.html", form=form, text="Create account",
-                           btn_action="Team registrieren")
+                           btn_action="Team anmelden")
 
 
 @app.route("/logout")
