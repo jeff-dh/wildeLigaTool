@@ -54,7 +54,7 @@ def standings():
                              drawWon, drawLost, gamesLost, pts)\
                                     .order_by(desc("pts")).all()
 
-    return render_template("standings.html", table=table)
+    return render_template("wklb/standings.html", table=table)
 
 
 @bp.route("/deleteResult/<id>", methods=("GET", "POST"), strict_slashes=False)
@@ -73,7 +73,7 @@ def deleteResult(id):
         if not current_user.is_authenticated or g.home_team != current_user.team:
             return redirect(url_for("wklb.results"))
 
-        return render_template("deleteResult.html",
+        return render_template("wklb/deleteResult.html",
                                team1_name=g.home_team.name,
                                team2_name=g.visiting_team.name,
                                id=g.id)
@@ -82,7 +82,7 @@ def deleteResult(id):
 def results():
     res = db.session.query(Game).order_by(desc("id")).all()
 
-    return render_template("results.html", rows=res)
+    return render_template("wklb/results.html", rows=res)
 
 @bp.route("/teamInfo/<id>", methods=("GET", "POST"), strict_slashes=False)
 @login_required
@@ -99,11 +99,11 @@ def teamInfo(id):
             flash(f"An database error occured!", "danger")
 
     form.info.data = t.info
-    return render_template("teamInfo.html", team=t, form=form)
+    return render_template("wklb/teamInfo.html", team=t, form=form)
 
 @bp.route("/info", strict_slashes=False)
 def info():
-    return render_template("info.html", registerCode=registerCode)
+    return render_template("wklb/info.html", registerCode=registerCode)
 
 @bp.route("/submitResult", methods=("GET", "POST"))
 @login_required
@@ -136,6 +136,6 @@ def submitResult():
 
         return redirect(url_for("wklb.standings"))
 
-    return render_template("submitResult.html", form=form,
+    return render_template("wklb/submitResult.html", form=form,
                            home_team=current_user.team.name, text="Submit Game")
 
