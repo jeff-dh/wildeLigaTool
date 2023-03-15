@@ -20,16 +20,18 @@
                     <div class="text-center card-header p-3">
                         <h2 class="text-primary">Ganz WildeKickerLigaBremen und umzu</h2>
 
-                        <a href="{{url_for('info')}}">Info</a> |
-                        <a href="{{url_for('standings')}}">Tabelle</a> |
-                        <a href="{{url_for('results')}}">Ergebnisse</a> |
+                        <a href="{{url_for('wklb.standings')}}">Tabelle</a> |
+                        <a href="{{url_for('wklb.results')}}">Ergebnisse</a> |
                         {% if current_user.is_authenticated %}
-                            <a href="{{url_for('submitResult')}}">Ergebnis eintragen</a> |
-                            <a href="{{url_for('teamInfo', id=current_user.team.id)}}">Team-Info</a> |
-                            <a href="{{url_for('logout')}}">Ausloggen</a>
+                            <a href="{{url_for('wklb.submitResult')}}">Ergebnis eintragen</a> |
+                            <a href="{{url_for('wklb.teamInfo', id=current_user.team.id)}}">Team-Info</a> |
+                        {% endif %}
+                        <a href="{{url_for('wklb.info')}}">Liga-Info</a> |
+                        {% if current_user.is_authenticated %}
+                            <a href="{{url_for('auth.logout')}}">Ausloggen</a>
                         {% else %}
-                            <a href="{{url_for('login')}}">Einloggen</a> |
-                            <a href="{{url_for('register')}}">Neues Team Anmelden</a>
+                            <a href="{{url_for('auth.login')}}">Einloggen</a> |
+                            <a href="{{url_for('auth.register')}}">Neues Team Anmelden</a>
                         {% endif %}
 
                     </div>

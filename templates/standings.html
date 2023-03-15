@@ -10,7 +10,7 @@
                 {% for t in table %}
                 <tr>
                     <td><b>{{ table.index(t) + 1 }}</b></td>
-                    <td><b><a href={{ url_for("teamInfo", id=t.id) }}>{{ t.name }}</a></b></td>
+                    <td><b><a href={{ url_for("wklb.teamInfo", id=t.id) }}>{{ t.name }}</a></b></td>
                     <td><b>{{ t.numberOfResults }}</b></td>
                     <td>{{ t.wins }}</td>
                     <td>{{ t.drawWins }}</td>

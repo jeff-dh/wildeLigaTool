@@ -1,31 +1,19 @@
-from flask import render_template, redirect, flash, request, url_for, session
+from flask import Blueprint, render_template, redirect, flash, request, url_for
 
 from sqlalchemy import and_, desc, func, or_
-from sqlalchemy.exc import IntegrityError, SQLAlchemyError
-from flask_bcrypt import check_password_hash
-from flask_login import login_user, current_user, logout_user, login_required
+from sqlalchemy.exc import SQLAlchemyError
+from flask_login import current_user, login_required
 
-from datetime import timedelta
+from .models import Team, Game, db
+from .forms import teamInfo_Form, submitResult_Form
+from .config import registerCode
 
-from app import create_app, db, login_manager, bcrypt
-from db import User, Team, Game
-from forms import login_form,register_form, submitResult_Form, teamInfo_Form
-from config import registerCode
+bp = Blueprint("wklb", __name__)
 
+def init_wklb(app):
+    app.register_blueprint(bp)
 
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
-
-app = create_app()
-
-@app.before_request
-def session_handler():
-    session.permanent = True
-    app.permanent_session_lifetime = timedelta(minutes=30)
-
-
-@app.route("/standings", methods=("GET", "POST"), strict_slashes=False)
+@bp.route("/standings", methods=("GET", "POST"), strict_slashes=False)
 def standings():
     numberOfResults = db.session.query(func.count(Game.id)).\
                         filter(or_(Game.home_team_id == Team.id,\
@@ -69,7 +57,7 @@ def standings():
     return render_template("standings.html", table=table)
 
 
-@app.route("/deleteResult/<id>", methods=("GET", "POST"), strict_slashes=False)
+@bp.route("/deleteResult/<id>", methods=("GET", "POST"), strict_slashes=False)
 def deleteResult(id):
     if request.method == "POST":
         try:
@@ -78,25 +66,25 @@ def deleteResult(id):
         except SQLAlchemyError:
             db.session.rollback()
             flash(f"An database error occured!", "danger")
-        return redirect(url_for("results"))
+        return redirect(url_for("wklb.results"))
     else:
         g = db.session.query(Game).filter_by(id=id).first()
 
         if not current_user.is_authenticated or g.home_team != current_user.team:
-            return redirect(url_for("results"))
+            return redirect(url_for("wklb.results"))
 
         return render_template("deleteResult.html",
                                team1_name=g.home_team.name,
                                team2_name=g.visiting_team.name,
                                id=g.id)
 
-@app.route("/results", methods=("GET", "POST"), strict_slashes=False)
+@bp.route("/results", methods=("GET", "POST"), strict_slashes=False)
 def results():
     res = db.session.query(Game).order_by(desc("id")).all()
 
     return render_template("results.html", rows=res)
 
-@app.route("/teamInfo/<id>", methods=("GET", "POST"), strict_slashes=False)
+@bp.route("/teamInfo/<id>", methods=("GET", "POST"), strict_slashes=False)
 @login_required
 def teamInfo(id):
     form = teamInfo_Form()
@@ -113,76 +101,11 @@ def teamInfo(id):
     form.info.data = t.info
     return render_template("teamInfo.html", team=t, form=form)
 
-@app.route("/", strict_slashes=False)
-@app.route("/info", strict_slashes=False)
+@bp.route("/info", strict_slashes=False)
 def info():
     return render_template("info.html", registerCode=registerCode)
 
-@app.route("/login/", methods=("GET", "POST"), strict_slashes=False)
-def login():
-    form = login_form()
-
-    if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data.lower()).first()
-        if user is not None and check_password_hash(user.password, form.password.data):
-            login_user(user)
-            next_page = request.form.get('next_page')
-            assert next_page
-            if "None" in next_page:
-                return redirect(url_for("info"))
-            else:
-                return redirect(next_page)
-
-        else:
-            flash("Invalid email or password!", "danger")
-
-    return render_template("login.html", form=form)
-
-
-@app.route("/register/", methods=("GET", "POST"), strict_slashes=False)
-def register():
-    form = register_form()
-
-    if form.validate_on_submit():
-
-        if  form.registerPassword.data != registerCode:
-            flash("Registrierungs-Code ist nicht korrekt", "warning")
-        else:
-            try:
-                email = form.email.data.lower()
-                password = form.password.data
-
-                newuser = User(email=email, #type: ignore
-                               password=bcrypt.generate_password_hash(password))
-
-                db.session.add(newuser)
-                db.session.commit()
-
-                newteam = Team(name = form.teamname.data, info="", user_id=newuser.id)
-                db.session.add(newteam)
-                db.session.commit()
-
-                flash(f"Account Succesfully created", "success")
-                return redirect(url_for("login"))
-
-            except IntegrityError:
-                db.session.rollback()
-                flash(f"User already exists!.", "warning")
-            except SQLAlchemyError:
-                db.session.rollback()
-                flash(f"An database error occured!", "danger")
-
-    return render_template("register.html", form=form)
-
-
-@app.route("/logout")
-@login_required
-def logout():
-    logout_user()
-    return redirect(url_for('info'))
-
-
-@app.route("/submitResult", methods=("GET", "POST"))
+@bp.route("/submitResult", methods=("GET", "POST"))
 @login_required
 def submitResult():
     form = submitResult_Form()
@@ -211,12 +134,8 @@ def submitResult():
             db.session.rollback()
             flash(f"An database error occured!", "danger")
 
-        return redirect(url_for("standings"))
+        return redirect(url_for("wklb.standings"))
 
     return render_template("submitResult.html", form=form,
                            home_team=current_user.team.name, text="Submit Game")
-
-
-if __name__ == "__main__":
-    app.run(debug=True)
 

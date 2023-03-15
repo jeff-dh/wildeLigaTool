@@ -1,10 +1,13 @@
 from wtforms import SelectField, StringField, PasswordField,\
-                    IntegerField, SubmitField, TextAreaField
+                    IntegerField, SubmitField, TextAreaField,\
+                    ValidationError
+
+from wtforms.validators import InputRequired, Length, EqualTo,\
+                               Email, NumberRange
 
 from flask_wtf import FlaskForm
-from wtforms.validators import InputRequired, Length, EqualTo, Email, NumberRange
-from wtforms import ValidationError
-from db import User, Team
+
+from .models import User, Team
 
 
 class login_form(FlaskForm):
@@ -34,6 +37,11 @@ class register_form(FlaskForm):
     def validate_teamname(self, teamname):
         if Team.query.filter_by(name=teamname.data).first():
             raise ValidationError("Team name already registered!")
+
+    def validate_registerPassword(self, registerPassword):
+        from .config import registerCode
+        if registerCode != registerPassword.data:
+            raise ValidationError("Registrierungs-Code ist nicht korrekt!")
 
 class submitResult_Form(FlaskForm):
     visiting_team = SelectField(coerce=int, validators=[InputRequired()])

@@ -1,8 +1,12 @@
-from app import db
-
+from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, ForeignKey, Integer, Text
 from sqlalchemy.orm import Mapped, relationship
 from flask_login import UserMixin
+
+db = SQLAlchemy()
+
+def init_db(app):
+    db.init_app(app)
 
 class User(UserMixin, db.Model):
     __tablename__ = "users"
