@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, flash, request, url_for
 
-from sqlalchemy import and_, desc, func, or_
+from sqlalchemy import and_, asc, desc, func, or_
 from sqlalchemy.exc import SQLAlchemyError
 from flask_login import current_user, login_required
 
@@ -15,33 +15,33 @@ def init_wklb(app):
 
 @bp.route("/standings", methods=("GET", "POST"), strict_slashes=False)
 def standings():
-    numberOfResults = db.session.query(func.count(Game.id)).\
+    numberOfResults = db.select(func.count(Game.id)).\
                         filter(or_(Game.home_team_id == Team.id,\
                                    Game.visiting_team_id == Team.id)).\
                         label("numberOfResults")
 
-    gamesWon = db.session.query(func.count(Game.id)).\
+    gamesWon = db.select(func.count(Game.id)).\
                         filter(or_(and_(Game.home_team_id == Team.id,\
                                Game.home_team_pts - Game.visiting_team_pts > 1),
                                    and_(Game.visiting_team_id == Team.id,
                                         Game.visiting_team_pts - Game.home_team_pts > 1))).\
                         label("wins")
 
-    gamesLost = db.session.query(func.count(Game.id)).\
+    gamesLost = db.select(func.count(Game.id)).\
                         filter(or_(and_(Game.home_team_id == Team.id,\
                                Game.home_team_pts - Game.visiting_team_pts < -1),
                                    and_(Game.visiting_team_id == Team.id,
                                         Game.visiting_team_pts - Game.home_team_pts < -1))).\
                         label("loses")
 
-    drawWon = db.session.query(func.count(Game.id)).\
+    drawWon = db.select(func.count(Game.id)).\
                         filter(or_(and_(Game.home_team_id == Team.id,\
                                Game.home_team_pts - Game.visiting_team_pts == 1),
                                    and_(Game.visiting_team_id == Team.id,
                                         Game.visiting_team_pts - Game.home_team_pts == 1))).\
                         label("drawWins")
 
-    drawLost = db.session.query(func.count(Game.id)).\
+    drawLost = db.select(func.count(Game.id)).\
                         filter(or_(and_(Game.home_team_id == Team.id,\
                                Game.home_team_pts - Game.visiting_team_pts == -1),
                                    and_(Game.visiting_team_id == Team.id,
@@ -50,9 +50,11 @@ def standings():
 
     pts = (gamesWon * 4 + gamesLost * 1 + drawLost * 2 + drawWon * 3).label("pts")
 
-    table = db.session.query(Team.id, Team.name, numberOfResults, gamesWon,
-                             drawWon, drawLost, gamesLost, pts)\
-                                    .order_by(desc("pts")).all()
+    tableStmt = db.select(Team.id, Team.name, numberOfResults, gamesWon,
+                          drawWon, drawLost, gamesLost, pts)\
+                                  .order_by(desc("pts"))
+
+    table = db.session.execute(tableStmt).all()
 
     return render_template("wklb/standings.html", table=table)
 
@@ -61,14 +63,16 @@ def standings():
 def deleteResult(id):
     if request.method == "POST":
         try:
-            db.session.query(Game).filter_by(id=id).delete()
+            stmt = db.delete(Game)\
+                       .where(Game.id==id)
+            db.session.execute(stmt)
             db.session.commit()
         except SQLAlchemyError:
             db.session.rollback()
             flash(f"An database error occured!", "danger")
         return redirect(url_for("wklb.results"))
     else:
-        g = db.session.query(Game).filter_by(id=id).first()
+        g = db.session.get(Game, id)
 
         if not current_user.is_authenticated or g.home_team != current_user.team:
             return redirect(url_for("wklb.results"))
@@ -80,7 +84,9 @@ def deleteResult(id):
 
 @bp.route("/results", methods=("GET", "POST"), strict_slashes=False)
 def results():
-    res = db.session.query(Game).order_by(desc("id")).all()
+    stmt = db.select(Game)\
+               .order_by(desc("id"))
+    res = db.session.execute(stmt).scalars().all()
 
     return render_template("wklb/results.html", rows=res)
 
@@ -88,7 +94,7 @@ def results():
 @login_required
 def teamInfo(id):
     form = teamInfo_Form()
-    t = db.session.query(Team).filter_by(id=id).first()
+    t = db.session.get(Team, id)
 
     if form.validate_on_submit():
         t.info = form.info.data
@@ -110,16 +116,17 @@ def info():
 def submitResult():
     form = submitResult_Form()
 
-    played_teams = db.session.query(Game.visiting_team_id).\
-                        filter_by(home_team_id=current_user.team.id)
+    played_teams = db.select(Game.visiting_team_id)\
+                        .where(Game.home_team_id == current_user.team.id)
 
-    teams = db.session.query(Team).\
-                filter(Team.id != current_user.team.id).\
-                filter(Team.id.not_in(played_teams)).all()
+    stmt = db.select(Team)\
+                .where(Team.id != current_user.team.id)\
+                .where(Team.id.not_in(played_teams))\
+                .order_by(asc("name"))
+    teams = db.session.execute(stmt).scalars().all()
 
     visiting_teams = [(t.id, t.name) for t in teams]
     form.visiting_team.choices = visiting_teams
-
 
     if form.validate_on_submit():
         g = Game(home_team_id=current_user.team.id,

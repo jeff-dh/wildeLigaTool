@@ -24,5 +24,5 @@ def create_app():
     init_wklb(app)
     init_auth(app)
 
-    app.add_url_rule("/", "wklb.standings")
+    app.add_url_rule("/", "wklb.info")
     return app

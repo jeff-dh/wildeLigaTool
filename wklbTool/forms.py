@@ -7,7 +7,7 @@ from wtforms.validators import InputRequired, Length, EqualTo,\
 
 from flask_wtf import FlaskForm
 
-from .models import User, Team
+from .models import User, Team, db
 
 
 class login_form(FlaskForm):
@@ -31,11 +31,15 @@ class register_form(FlaskForm):
     submit = SubmitField("Team anmelden")
 
     def validate_email(self, email):
-        if User.query.filter_by(email=email.data).first():
+        stmt = db.select(User)\
+                   .filter_by(email=email.data.lower())
+        if db.session.execute(stmt).first():
             raise ValidationError("Email already registered!")
 
     def validate_teamname(self, teamname):
-        if Team.query.filter_by(name=teamname.data).first():
+        stmt = db.select(Team)\
+                   .filter_by(name=teamname.data)
+        if db.session.execute(stmt).first():
             raise ValidationError("Team name already registered!")
 
     def validate_registerPassword(self, registerPassword):
@@ -48,6 +52,10 @@ class submitResult_Form(FlaskForm):
     home_team_pts = IntegerField(validators=[InputRequired(), NumberRange(min=0)], default=0)
     visiting_team_pts = IntegerField(validators=[InputRequired(), NumberRange(min=0)], default=0)
     submit = SubmitField("Ergebnis eintragen")
+
+    def validate_visiting_team_pts(self, visiting_team_pts):
+        if visiting_team_pts.data == self.home_team_pts.data:
+            raise ValidationError("Unentschieden gibt es nach den Regeln nicht....")
 
 class teamInfo_Form(FlaskForm):
     info = TextAreaField()

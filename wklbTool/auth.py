@@ -6,7 +6,6 @@ from flask_bcrypt import Bcrypt
 
 from .models import User, Team, db
 from .forms import login_form,register_form
-from .config import registerCode
 
 
 login_manager = LoginManager()
@@ -25,14 +24,17 @@ def init_auth(app):
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    return db.session.get(User, user_id)
 
 @bp.route("/login/", methods=("GET", "POST"), strict_slashes=False)
 def login():
     form = login_form()
 
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data.lower()).first()
+        stmt = db.select(User)\
+                   .filter_by(email=form.email.data.lower())
+        user = db.session.execute(stmt).scalars().first()
+
         if user is not None and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user)
             next_page = request.form.get('next_page')
@@ -53,22 +55,24 @@ def register():
     form = register_form()
 
     if form.validate_on_submit():
+        email = form.email.data.lower()
+        password = form.password.data
+
+        pwhash = bcrypt.generate_password_hash(password)
+        newuser = User(email=email, password=pwhash) #type: ignore
+
         try:
-            email = form.email.data.lower()
-            password = form.password.data
-
-            newuser = User(email=email, #type: ignore
-                            password=bcrypt.generate_password_hash(password))
-
             db.session.add(newuser)
             db.session.commit()
 
-            newteam = Team(name = form.teamname.data, info="", user_id=newuser.id)
+            newteam = Team(name = form.teamname.data, user_id=newuser.id)
+
             db.session.add(newteam)
             db.session.commit()
 
             flash(f"Account Succesfully created", "success")
-            return redirect(url_for("auth.login"))
+            login_user(newuser)
+            return redirect("/")
 
         except IntegrityError:
             db.session.rollback()

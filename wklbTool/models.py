@@ -8,7 +8,7 @@ db = SQLAlchemy()
 def init_db(app):
     db.init_app(app)
 
-class User(UserMixin, db.Model):
+class User(UserMixin, db.Model): #type: ignore
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True)
@@ -21,17 +21,17 @@ class User(UserMixin, db.Model):
         return bcrypt.checkpw(password, self.password)
 
 
-class Team(db.Model):
+class Team(db.Model): #type: ignore
     __tablename__ = "teams"
 
     id = Column(Integer, primary_key=True)
     name = Column(Text, nullable=False, unique=True)
-    info = Column(Text, nullable=False)
+    info = Column(Text, nullable=False, default="")
     user_id = Column(ForeignKey(User.id))
 
     user : Mapped["User"] = relationship("User", back_populates="team", uselist=False)
 
-class Game(db.Model):
+class Game(db.Model): #type: ignore
     __tablename__ = "games"
 
     id = Column(Integer, primary_key=True)
@@ -44,7 +44,7 @@ class Game(db.Model):
     visiting_team : Mapped["Team"] = relationship("Team", foreign_keys=visiting_team_id, uselist=False)
 
 if __name__ == "__main__":
-	from app import create_app, db
+	from . import create_app, db
 
 	app = create_app()
 	app.app_context().push()

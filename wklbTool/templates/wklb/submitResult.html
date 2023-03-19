@@ -1,10 +1,13 @@
 {% extends "base.html" %}
 
+{% from "utils.jinja" import errorBox %}
+
 {% block content%}
     <h4>Ergebnis eintragen</h4>
     <form action="{{ request.path }}" method="POST">
         {{ form.csrf_token }}
 
+        {{ errorBox(form.visiting_team_pts.errors) }}
         <table class="w-100 mb-1">
             <tbody>
                 <tr>
