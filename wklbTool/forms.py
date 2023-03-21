@@ -11,12 +11,16 @@ from .models import User, Team, db
 
 
 class login_form(FlaskForm):
-    email = StringField("E-Mail", validators=[InputRequired(), Email(), Length(1, 64)])
+    email = StringField("E-Mail",
+                        validators=[InputRequired(), Email(), Length(1, 64)],
+                        render_kw={"autofocus":True})
     password = PasswordField("Passwort", validators=[InputRequired(), Length(min=6, max=72)])
     submit = SubmitField("Einloggen")
 
 class register_form(FlaskForm):
-    email = StringField("E-Mail", validators=[InputRequired(), Email(), Length(1, 64)])
+    email = StringField("E-Mail",
+                        validators=[InputRequired(), Email(), Length(1, 64)],
+                        render_kw={"autofocus":True})
     password = PasswordField("Passwort", validators=[InputRequired(), Length(6, 72)])
     cpassword = PasswordField("Passwort bestätigen",
         validators=[
@@ -58,6 +62,6 @@ class submitResult_Form(FlaskForm):
             raise ValidationError("Unentschieden gibt es nach den Regeln nicht....")
 
 class teamInfo_Form(FlaskForm):
-    info = TextAreaField()
+    info = TextAreaField(render_kw={"autofocus":True})
     submit = SubmitField("Speichern")
 
