@@ -9,8 +9,8 @@
         <tbody>
             {% for r in rows %}
             <tr>
-                <td><a href={{ url_for("wklb.teamInfo", id=r.home_team.id) }}>{{ r.home_team.name }}</a></td>
-                <td><a href={{ url_for("wklb.teamInfo", id=r.visiting_team.id) }}>{{ r.visiting_team.name }}</a></td>
+                <td><a class="link-primary" href={{ url_for("wklb.teamInfo", id=r.home_team.id) }}>{{ r.home_team.name }}</a></td>
+                <td><a class="link-primary" href={{ url_for("wklb.teamInfo", id=r.visiting_team.id) }}>{{ r.visiting_team.name }}</a></td>
                 <td>{{ r.home_team_pts }} : {{ r.visiting_team_pts }}</td>
                 <td>
                     {% if current_user.is_authenticated and current_user.id == r.home_team.user.id %}

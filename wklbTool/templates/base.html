@@ -6,31 +6,39 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous"> -->
     <!-- Sweet alert Js -->
+    <link href="{{ url_for('static', filename='bootstrap.min.css') }}" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <title>Ganz WildeKickerLigaBremen und umzu</title>
 </head>
 
 <body>
     <div class="container">
-        <div class="row mt-4 mb-4">
+        <div class="row mx-0 my-4">
             <div class="col-lg-8 col-md-8 m-auto p-0 card">
 
-                    <div class="text-center card-header p-3">
-                        <h2 class="text-primary">Ganz WildeKickerLigaBremen und umzu</h2>
+                    <div class="card-header">
+                        <div class="text-end small">
+                            {% if current_user.is_authenticated %}
+                                <a class="link-secondary" href="{{url_for('wklb.teamInfo', id=current_user.team.id)}}">Team-Info</a> |
+                                <a class="link-secondary" href="{{url_for('auth.logout')}}">Ausloggen</a>
+                            {% else %}
+                                <a class="link-secondary" href="{{url_for('auth.login')}}">Einloggen</a> |
+                                <a class="link-secondary" href="{{url_for('auth.register')}}">Neues Team Anmelden</a>
+                            {% endif %}
+                        </div>
+                        <div class="text-center p-3">
+                            <h2 class="text-primary">Ganz WildeKickerLigaBremen und umzu</h2>
 
-                        <a href="{{url_for('wklb.info')}}">Info</a> |
-                        <a href="{{url_for('wklb.standings')}}">Tabelle</a> |
-                        <a href="{{url_for('wklb.results')}}">Ergebnisse</a> |
-                        {% if current_user.is_authenticated %}
-                            <a href="{{url_for('wklb.submitResult')}}">Ergebnis eintragen</a> |
-                            <a href="{{url_for('wklb.teamInfo', id=current_user.team.id)}}">Team-Info</a> |
-                            <a href="{{url_for('auth.logout')}}">Ausloggen</a>
-                        {% else %}
-                            <a href="{{url_for('auth.login')}}">Einloggen</a> |
-                            <a href="{{url_for('auth.register')}}">Neues Team Anmelden</a>
-                        {% endif %}
+                            <a class="link-primary" href="{{url_for('wklb.info')}}">Info</a> |
+                            <a class="link-primary" href="{{url_for('wklb.standings')}}">Tabelle</a> |
+                            <a class="link-primary" href="{{url_for('wklb.results')}}">Ergebnisse</a>
+                            {% if current_user.is_authenticated %}
+                               |
+                                <a class="link-primary" href="{{url_for('wklb.submitResult')}}">Ergebnis eintragen</a>
+                            {% endif %}
+                        </div>
 
                     </div>
                     <div class="text-center card-body">
