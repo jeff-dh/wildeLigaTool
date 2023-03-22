@@ -1,7 +1,7 @@
 from datetime import date
 from flask import Blueprint, render_template, redirect, flash, request, url_for
 
-from sqlalchemy import and_, asc, desc, func, or_
+from sqlalchemy import asc, desc, func
 from sqlalchemy.exc import SQLAlchemyError
 from flask_login import current_user, login_required
 
@@ -16,40 +16,37 @@ def init_wklb(app):
 
 @bp.route("/standings", methods=("GET", "POST"), strict_slashes=False)
 def standings():
+    def home(): return Game.home_team_id == Team.id
+    def visit(): return Game.visiting_team_id == Team.id
+    def homePtsDiff(): return Game.home_team_pts - Game.visiting_team_pts
+    def visitPtsDiff(): return Game.visiting_team_pts - Game.home_team_pts
+
     numberOfResults = db.select(func.count(Game.id)).\
-                        filter(or_(Game.home_team_id == Team.id,\
-                                   Game.visiting_team_id == Team.id)).\
+                        filter(home() | visit()).\
                         label("numberOfResults")
 
     gamesWon = db.select(func.count(Game.id)).\
-                        filter(or_(and_(Game.home_team_id == Team.id,\
-                               Game.home_team_pts - Game.visiting_team_pts > 1),
-                                   and_(Game.visiting_team_id == Team.id,
-                                        Game.visiting_team_pts - Game.home_team_pts > 1))).\
-                        label("wins")
+                filter((home() & (homePtsDiff() > 1)) |
+                       (visit() & (visitPtsDiff() > 1))).\
+                label("wins")
 
     gamesLost = db.select(func.count(Game.id)).\
-                        filter(or_(and_(Game.home_team_id == Team.id,\
-                               Game.home_team_pts - Game.visiting_team_pts < -1),
-                                   and_(Game.visiting_team_id == Team.id,
-                                        Game.visiting_team_pts - Game.home_team_pts < -1))).\
-                        label("loses")
+                filter((home() & (homePtsDiff() < -1)) |
+                       (visit() & (visitPtsDiff() < -1))).\
+                label("loses")
+
 
     drawWon = db.select(func.count(Game.id)).\
-                        filter(or_(and_(Game.home_team_id == Team.id,\
-                               Game.home_team_pts - Game.visiting_team_pts == 1),
-                                   and_(Game.visiting_team_id == Team.id,
-                                        Game.visiting_team_pts - Game.home_team_pts == 1))).\
-                        label("drawWins")
+                filter((home() & (homePtsDiff() == 1)) |
+                       (visit() & (visitPtsDiff() == 1))).\
+                label("drawWins")
 
     drawLost = db.select(func.count(Game.id)).\
-                        filter(or_(and_(Game.home_team_id == Team.id,\
-                               Game.home_team_pts - Game.visiting_team_pts == -1),
-                                   and_(Game.visiting_team_id == Team.id,
-                                        Game.visiting_team_pts - Game.home_team_pts == -1))).\
-                        label("drawLoses")
+                filter((home() & (homePtsDiff() == -1)) |
+                       (visit() & (visitPtsDiff() == -1))).\
+                label("drawLoses")
 
-    pts = (gamesWon * 4 + gamesLost * 1 + drawLost * 2 + drawWon * 3).label("pts")
+    pts = (gamesLost * 1 + drawLost * 2 + drawWon * 3 + gamesWon * 4).label("pts")
 
     tableStmt = db.select(Team.id, Team.name, numberOfResults, gamesWon,
                           drawWon, drawLost, gamesLost, pts)\
