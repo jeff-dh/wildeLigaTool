@@ -5,7 +5,7 @@ from .config import secretKey
 
 from .auth import init_auth
 from .wklb import init_wklb
-from .models import init_db
+from .models import init_db, db
 
 def create_app():
 
@@ -23,6 +23,10 @@ def create_app():
     init_db(app)
     init_wklb(app)
     init_auth(app)
+
+    from flask_migrate import Migrate
+    migrate = Migrate()
+    migrate.init_app(app, db)
 
     app.add_url_rule("/", "wklb.info")
     return app
