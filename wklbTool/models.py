@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Column, ForeignKey, Integer, Text
+from sqlalchemy import Column, ForeignKey, Integer, Text, Date
 from sqlalchemy.orm import Mapped, relationship
 from flask_login import UserMixin
 
@@ -39,6 +39,7 @@ class Game(db.Model): #type: ignore
     visiting_team_id = Column(ForeignKey(Team.id))
     home_team_pts = Column(Integer)
     visiting_team_pts = Column(Integer)
+    date = Column(Date)
 
     home_team : Mapped["Team"] = relationship("Team", foreign_keys=home_team_id, uselist=False)
     visiting_team : Mapped["Team"] = relationship("Team", foreign_keys=visiting_team_id, uselist=False)

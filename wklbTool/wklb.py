@@ -1,3 +1,4 @@
+from datetime import date
 from flask import Blueprint, render_template, redirect, flash, request, url_for
 
 from sqlalchemy import and_, asc, desc, func, or_
@@ -85,7 +86,7 @@ def deleteResult(id):
 @bp.route("/results", methods=("GET", "POST"), strict_slashes=False)
 def results():
     stmt = db.select(Game)\
-               .order_by(desc("id"))
+               .order_by(desc("date"))
     res = db.session.execute(stmt).scalars().all()
 
     return render_template("wklb/results.html", rows=res)
@@ -132,7 +133,8 @@ def submitResult():
         g = Game(home_team_id=current_user.team.id,
                  visiting_team_id=form.visiting_team.data,
                  home_team_pts=form.home_team_pts.data,
-                 visiting_team_pts=form.visiting_team_pts.data)
+                 visiting_team_pts=form.visiting_team_pts.data,
+                 date = date.today())
 
         try:
             db.session.add(g)
