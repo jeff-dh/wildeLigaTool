@@ -22,20 +22,8 @@
                     <td>{{ t.drawWins }}</td>
                     <td>{{ t.drawLoses }}</td>
                     <td>{{ t.loses }}</td>
-                    <td>
-                        {% if t.wonSets != None %}
-                            {{ t.wonSets }} : {{ t.lostSets }}
-                        {% else %}
-                            0 : 0
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if t.wonSets != None %}
-                            {{ t.wonSets - t.lostSets }}
-                        {% else %}
-                            0
-                        {% endif %}
-                    </td>
+                    <td>{{ t.wonSets }} : {{ t.lostSets }} </td>
+                    <td>{{ t.wonSets - t.lostSets }} </td>
                 </tr>
                 {% endfor %}
         </tbody>
