@@ -1,24 +1,38 @@
 {% extends "base.html" %}
 
 {% block content%}
-    <h4>Ergebnisse</h4>
-    <table class="table">
+
+<div class="table-responsive">
+    <table class="table rounded rounded-4 overflow-hidden caption-top table-striped table-light">
+        <caption class="text-center"><h3>Ergebnisse</h3></caption>
         <thead>
-            <th>Heim</th> <th>Gast</th> <th>Ergebnis</th> <th/>
+            <th/><th>Heim</th> <th>Gast</th> <th>Ergebnis</th> <th/>
         </thead>
         <tbody>
             {% for r in rows %}
             <tr>
-                <td><a class="link-primary" href={{ url_for("wklb.teamInfo", id=r.home_team.id) }}>{{ r.home_team.name }}</a></td>
-                <td><a class="link-primary" href={{ url_for("wklb.teamInfo", id=r.visiting_team.id) }}>{{ r.visiting_team.name }}</a></td>
+                <td>
+                    <span class="small">{{ r.date.strftime("%d.%m.%y") }}</span>
+                </td>
+                <td><a class="link-primary"
+                       href={{ url_for("wklb.teamInfo", id=r.home_team.id) }}>
+                    <b>{{ r.home_team.name }}</a>
+                </a></td>
+                <td><a class="link-primary"
+                       href={{ url_for("wklb.teamInfo", id=r.visiting_team.id) }}>
+                    <b>{{ r.visiting_team.name }}</b>
+                </a></td>
                 <td>{{ r.home_team_pts }} : {{ r.visiting_team_pts }}</td>
                 <td>
                     {% if current_user.is_authenticated and current_user.id == r.home_team.user.id %}
-                        <a href={{ url_for("wklb.deleteResult", id=r.id)}}><span class="badge bg-danger">Löschen</span></a>
+                        <a href={{ url_for("wklb.deleteResult", id=r.id)}}>
+                            <span class="bi bi-trash3 text-primary" title="Ergebnis löschen"></span>
+                        </a>
                     {% endif %}
                 </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+</div>
 {% endblock %}

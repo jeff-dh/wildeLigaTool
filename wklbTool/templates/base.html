@@ -8,7 +8,9 @@
     <!-- Bootstrap CSS -->
     <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous"> -->
     <!-- Sweet alert Js -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
     <link href="{{ url_for('static', filename='bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='wklb.css') }}" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <title>Ganz WildeKickerLigaBremen und umzu</title>
 </head>
@@ -16,10 +18,10 @@
 <body>
     <div class="container">
         <div class="row mx-0 my-4">
-            <div class="col-lg-8 col-md-8 m-auto p-0 card">
+            <div class="col-lg-8 col-md-10 m-auto p-0 card">
 
-                    <div class="card-header">
-                        <div class="text-end small">
+                    <div class="card-header bg-light">
+                        <div class="text-end">
                             {% if current_user.is_authenticated %}
                                 <a class="link-secondary"
                                    href="{{url_for('wklb.teamInfo', id=current_user.team.id)}}">

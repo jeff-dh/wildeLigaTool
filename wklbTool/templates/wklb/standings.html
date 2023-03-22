@@ -1,24 +1,32 @@
 {% extends "base.html" %}
 
 {% block content%}
-    <h4>Tabelle</h4>
-    <table class="table">
-        <thead>
-            <th>#</th> <th>Team</th> <th>Spiele</th> <th>S</th> <th>U+</th> <th>U-</th> <th>N</th> <th>Pkt</th>
+<div class="table-responsive">
+    <table class="table rounded rounded-4 overflow-hidden caption-top table-hover table-light">
+        <caption class="text-center"><h3>Tabelle</h3></caption>
+        <thead class="text-muted small">
+            <th>#</th> <th class="text-start">Team</th> <th>Spiele</th> <th class="right-border">Pkt</th> <th>S</th> <th>U+</th> <th>U-</th> <th>N</th> <th>Sätze</th> <th>D</th>
         </thead>
         <tbody>
                 {% for t in table %}
                 <tr>
                     <td><b>{{ table.index(t) + 1 }}</b></td>
-                    <td><b><a class="text-primary"href={{ url_for("wklb.teamInfo", id=t.id) }}>{{ t.name }}</a></b></td>
+                    <td class="text-start">
+                        <a class="link-primary" href={{ url_for("wklb.teamInfo", id=t.id) }}>
+                            <b>{{ t.name }}</b>
+                        </a>
+                    </td>
                     <td><b>{{ t.numberOfResults }}</b></td>
+                    <td class="right-border"><b>{{ t.pts }}</b></td>
                     <td>{{ t.wins }}</td>
                     <td>{{ t.drawWins }}</td>
                     <td>{{ t.drawLoses }}</td>
                     <td>{{ t.loses }}</td>
-                    <td><b>{{ t.pts }}</b></td>
+                    <td>{{ t.wonSets }} : {{ t.lostSets }} </td>
+                    <td>{{ t.wonSets - t.lostSets }} </td>
                 </tr>
                 {% endfor %}
         </tbody>
     </table>
+</div>
 {% endblock %}

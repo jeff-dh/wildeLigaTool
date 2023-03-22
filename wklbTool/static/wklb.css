@@ -1,0 +1,11 @@
+.right-border {
+    border-right : solid 2px gray
+    }
+
+a {
+    text-decoration: none
+    }
+
+a:hover {
+    text-decoration: underline
+    }

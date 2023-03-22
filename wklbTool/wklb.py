@@ -48,8 +48,20 @@ def standings():
 
     pts = (gamesLost * 1 + drawLost * 2 + drawWon * 3 + gamesWon * 4).label("pts")
 
+    homeWonSets = db.select(func.sum(Game.home_team_pts)).\
+                    filter(home()).label("hws")
+    homeLostSets = db.select(func.sum(Game.visiting_team_pts)).\
+                    filter(home()).label("hls")
+    visitWonSets = db.select(func.sum(Game.visiting_team_pts)).\
+                    filter(visit()).label("vws")
+    visitLostSets = db.select(func.sum(Game.home_team_pts)).\
+                    filter(visit()).label("vls")
+
+    wonSets = (homeWonSets + visitWonSets).label("wonSets")
+    lostSets = (homeLostSets + visitLostSets).label("lostSets")
+
     tableStmt = db.select(Team.id, Team.name, numberOfResults, gamesWon,
-                          drawWon, drawLost, gamesLost, pts)\
+                          drawWon, drawLost, gamesLost, wonSets, lostSets, pts)\
                                   .order_by(desc("pts"))
 
     table = db.session.execute(tableStmt).all()
