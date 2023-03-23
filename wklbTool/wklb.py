@@ -42,8 +42,8 @@ def standings():
                 label("drawWins")
 
     drawLost = db.select(func.count(Game.id)).\
-                filter((home() & (homePtsDiff() == -1)) |
-                       (visit() & (visitPtsDiff() == -1))).\
+                filter((home() & ((homePtsDiff() == -1) | (homePtsDiff() == 0))) |
+                       (visit() & ((visitPtsDiff() == -1) | (visitPtsDiff() == 0)))).\
                 label("drawLoses")
 
     pts = (gamesLost * 1 + drawLost * 2 + drawWon * 3 + gamesWon * 4).label("pts")

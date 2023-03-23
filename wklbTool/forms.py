@@ -57,9 +57,9 @@ class submitResult_Form(FlaskForm):
     visiting_team_pts = IntegerField(validators=[InputRequired(), NumberRange(min=0)], default=0)
     submit = SubmitField("Ergebnis eintragen")
 
-    def validate_visiting_team_pts(self, visiting_team_pts):
-        if visiting_team_pts.data == self.home_team_pts.data:
-            raise ValidationError("Unentschieden gibt es nach den Regeln nicht....")
+    # def validate_visiting_team_pts(self, visiting_team_pts):
+    #     if visiting_team_pts.data == self.home_team_pts.data:
+    #         raise ValidationError("Unentschieden gibt es nach den Regeln nicht....")
 
 class teamInfo_Form(FlaskForm):
     info = TextAreaField(render_kw={"autofocus":True})
