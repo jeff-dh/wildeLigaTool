@@ -1,33 +1,45 @@
 {% extends "base.html" %}
 
+{% from "utils.jinja" import errorBox %}
+{% from "wklb/deleteResultBox.jinja" import deleteBox %}
+{% from "wklb/teamInfo.jinja" import teamInfo, teamInfoLink %}
+
 {% block content%}
 
+{% for ti in teamInfos %}
+    {{teamInfo(ti, current_user)}}
+{% endfor %}
+
 <div class="table-responsive">
-    <table class="table table-sm rounded rounded-4 overflow-hidden caption-top table-striped table-light">
+    <table class="table table-sm small rounded rounded-4 overflow-hidden caption-top table-striped table-light">
         <caption class="text-center"><h3>Ergebnisse</h3></caption>
         <thead>
             <th/><th>Heim</th> <th>Gast</th> <th>Ergebnis</th> <th/>
         </thead>
         <tbody>
+            {% if current_user.is_authenticated %}
+            <tr>
+                <td colspan="5">
+                    {% include 'wklb/submitResultBox.jinja' %}
+                </td>
+            </tr>
+            {% endif %}
             {% for r in rows %}
             <tr>
                 <td>
                     <span class="small">{{ r.date.strftime("%d.%m.%y") }}</span>
                 </td>
-                <td><a class="link-primary"
-                       href={{ url_for("wklb.teamInfo", id=r.home_team.id) }}>
-                    <b>{{ r.home_team.name }}</a>
-                </a></td>
-                <td><a class="link-primary"
-                       href={{ url_for("wklb.teamInfo", id=r.visiting_team.id) }}>
-                    <b>{{ r.visiting_team.name }}</b>
-                </a></td>
+                <td>
+                    {{teamInfoLink(r.home_team, current_user)}}
+                </td>
+                <td>
+                    {{teamInfoLink(r.visiting_team, current_user)}}
+                </a>
+                </td>
                 <td>{{ r.home_team_pts }} : {{ r.visiting_team_pts }}</td>
                 <td>
                     {% if current_user.is_authenticated and current_user.id == r.home_team.user.id %}
-                        <a href={{ url_for("wklb.deleteResult", id=r.id)}}>
-                            <span class="bi bi-trash3 text-primary" title="Ergebnis löschen"></span>
-                        </a>
+                        {{ deleteBox(r.id, r.home_team.name, r.visiting_team.name) }}
                     {% endif %}
                 </td>
             </tr>

@@ -1,0 +1,40 @@
+{% from "wklb/modalBase.jinja" import modal, endmodal, show_modal %}
+
+<button class="btn btn-primary btn-sm mb-1" {{ show_modal("submitResultBox") }}>
+    Spielergebnis eintragen
+</button>
+
+{{modal("submitResultBox", "Spielergebnis eintragen")}}
+
+    <form action="{{ url_for('wklb.submitResult') }}" method="POST">
+        {{ form.csrf_token }}
+
+        {{ errorBox(form.visiting_team_pts.errors) }}
+
+        <table class="w-100 mb-1">
+            <tbody>
+                <tr>
+                    <td> {{ current_user.team.name }} </td>
+                    <td> : </td>
+                    <td> {{ form.visiting_team(class_="form-control",
+                                               placeholder="Gast Mannschaft")}}
+                    </td>
+                </tr>
+                <tr>
+                    <td> {{ form.home_team_pts(class_="form-control",
+                                               placeholder="0")}}
+                    </td>
+                    <td> </td>
+                    <td> {{ form.visiting_team_pts(class_="form-control",
+                                                   placeholder="0")}}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <button type="button"
+                class="btn btn-sm btn-secondary"
+                data-bs-dismiss="modal">Abbrechen</button>
+        {{ form.submit(class_="btn btn-primary btn-sm") }}
+    </form>
+{{ endmodal }}

@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% from "wklb/teamInfo.jinja" import teamInfo, teamInfoLink %}
+
+{% block content%}
+
+<div class="table-responsive">
+    <table class="table table-sm small rounded rounded-4 overflow-hidden caption-top table-hover table-light text-start">
+        <caption class="text-center">
+            <h3>Teams</h3>
+            <div class="text-dark bg-light rounded rounded-4">
+                <b class="text-primary">
+                    Alle Teams / Rund-Mail:
+                </b>
+
+                {% for t in teams %}
+                    {{ t.user.email + ("," if teams.index(t) != teams.__len__()-1 else "") }}
+                {% endfor %}
+            </div>
+        </caption>
+        <thead class="text-muted small">
+            <th class="text-center">Team</th> <th class="text-center">Info</th>
+        </thead>
+        <tbody>
+                <tr>
+                    <td class="align-middle">
+                        <b class="text-primary">
+                            {{ current_user.team.name }}
+                        </b><br/>
+                        <span class="text-dark small">
+                            {{ current_user.team.user.email }}
+                        </span>
+                    </td>
+
+                    <td class="text-start small align-middle">
+                        <div class="text-end">
+                            {% include "wklb/teamInfoEdit.jinja" %}
+                        </div>
+                        {% for line in current_user.team.info.split("\n") %}
+                            {{ line }}
+                            {% if not loop.last %}
+                                <br>
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+                </tr>
+                {% for t in teams %}
+                {% if t.id != current_user.team.id %}
+                <tr>
+                    <td class="align-middle"><b class="text-primary">{{ t.name }}</b><br/>
+                        <span class="text-dark small">{{ t.user.email }}</span>
+                    </td>
+
+                    <td class="text-start small align-middle">
+                        {% for line in t.info.split("\n") %}
+                            {{ line }}
+                            {% if not loop.last %}
+                                <br>
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

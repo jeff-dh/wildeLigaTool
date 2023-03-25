@@ -1,8 +1,15 @@
 {% extends "base.html" %}
 
+{% from "wklb/teamInfo.jinja" import teamInfo, teamInfoLink %}
+
 {% block content%}
+
+{% for t in teamInfos %}
+    {{ teamInfo(t, current_user) }}
+{% endfor %}
+
 <div class="table-responsive">
-    <table class="table table-sm rounded rounded-4 overflow-hidden caption-top table-hover table-light">
+    <table class="table table-sm small rounded rounded-4 overflow-hidden caption-top table-hover table-light align-middle">
         <caption class="text-center"><h3>Tabelle</h3></caption>
         <thead class="text-muted small">
             <th>#</th> <th class="text-start">Team</th> <th>Spiele</th> <th class="right-border">Pkt</th> <th>S</th> <th>U+</th> <th>U(-)</th> <th>N</th> <th>Sätze</th> <th>D</th>
@@ -12,9 +19,7 @@
                 <tr>
                     <td><b>{{ table.index(t) + 1 }}</b></td>
                     <td class="text-start">
-                        <a class="link-primary" href={{ url_for("wklb.teamInfo", id=t.id) }}>
-                            <b>{{ t.name }}</b>
-                        </a>
+                        {{ teamInfoLink(t, current_user) }}
                     </td>
                     <td><b>{{ t.numberOfResults }}</b></td>
                     <td class="right-border"><b>{{ t.pts }}</b></td>
