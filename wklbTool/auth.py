@@ -12,6 +12,7 @@ from .forms import login_form,register_form
 login_manager = LoginManager()
 login_manager.session_protection = "strong"
 login_manager.login_view = "auth.login"
+login_manager.login_message = "Bitte einloggen, um diese Seite zu sehen!"
 login_manager.login_message_category = "info"
 
 bcrypt = Bcrypt()
@@ -46,7 +47,7 @@ def login():
                 return redirect(next_page)
 
         else:
-            flash("Invalid email or password!", "danger")
+            flash("Falsche E-Mail oder Passwort!", "danger")
 
     return render_template("auth/login.html", form=form)
 
@@ -71,7 +72,7 @@ def register():
             db.session.add(newteam)
             db.session.commit()
 
-            flash(f"Account Succesfully created", "success")
+            flash(f"Team wurde erfolgreich angemeldet!", "success")
             login_user(newuser)
             return redirect("/")
 
