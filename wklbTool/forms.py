@@ -7,7 +7,8 @@ from wtforms.validators import InputRequired, Length, EqualTo,\
 
 from flask_wtf import FlaskForm
 
-from .models import User, Team, db
+from .models import User, Team
+from . import db
 
 
 class login_form(FlaskForm):

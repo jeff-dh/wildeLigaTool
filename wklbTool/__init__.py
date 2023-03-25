@@ -1,11 +1,13 @@
 from datetime import timedelta
 from flask import Flask, session
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
 
 from .config import secretKey
 
 from .auth import init_auth
 from .wklb import init_wklb
-from .models import init_db, db
 
 def create_app():
 
@@ -20,7 +22,7 @@ def create_app():
         session.permanent = True
         app.permanent_session_lifetime = timedelta(minutes=30)
 
-    init_db(app)
+    db.init_app(app)
     init_wklb(app)
     init_auth(app)
 

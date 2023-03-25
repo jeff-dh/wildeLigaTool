@@ -5,7 +5,8 @@ from sqlalchemy import asc, desc, func
 from sqlalchemy.exc import SQLAlchemyError
 from flask_login import current_user, login_required
 
-from .models import Team, Game, db
+from .models import Team, Game, User
+from . import db
 from .forms import teamInfo_Form, submitResult_Form
 from .config import registerCode
 

@@ -4,7 +4,8 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from flask_login import LoginManager, login_user, logout_user, login_required
 from flask_bcrypt import Bcrypt
 
-from .models import User, Team, db
+from .models import User, Team
+from . import db
 from .forms import login_form,register_form
 
 
