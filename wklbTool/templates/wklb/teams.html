@@ -1,7 +1,5 @@
 {% extends "base.html" %}
 
-{% from "wklb/teamInfo.jinja" import teamInfo, teamInfoLink %}
-
 {% block content%}
 
 <div class="table-responsive">
@@ -34,7 +32,7 @@
 
                     <td class="text-start small align-middle">
                         <div class="text-end">
-                            {% include "wklb/teamInfoEdit.jinja" %}
+                            {% include "wklb/modals/teamInfoEdit.jinja" %}
                         </div>
                         {% for line in current_user.team.info.split("\n") %}
                             {{ line }}
