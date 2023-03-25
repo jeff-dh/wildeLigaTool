@@ -8,14 +8,13 @@ from flask_login import current_user, login_required
 from .models import Team, Game, User
 from . import db
 from .forms import teamInfo_Form, submitResult_Form
-from .config import registerCode
 
 bp = Blueprint("wklb", __name__)
 
 def init_wklb(app):
     app.register_blueprint(bp)
 
-@bp.route("/standings", methods=("GET", "POST"), strict_slashes=False)
+@bp.route("/standings", methods=("GET",), strict_slashes=False)
 def standings():
     def home(): return Game.home_team_id == Team.id
     def visit(): return Game.visiting_team_id == Team.id
@@ -76,7 +75,7 @@ def standings():
                            teamInfos=teamInfos)
 
 
-@bp.route("/deleteResult/<id>", methods=("GET", "POST"), strict_slashes=False)
+@bp.route("/deleteResult/<id>", methods=("POST",), strict_slashes=False)
 def deleteResult(id):
     if request.method == "POST":
         try:
@@ -101,7 +100,7 @@ def getVisitingTeamChoices():
 
     return [(t.id, t.name) for t in teams]
 
-@bp.route("/results", methods=("GET", "POST"), strict_slashes=False)
+@bp.route("/results", methods=("GET",), strict_slashes=False)
 def results():
     form = submitResult_Form()
 
@@ -128,7 +127,7 @@ def teams():
     teams = db.session.execute(teamsStmt).scalars().all()
 
     form = teamInfo_Form()
-    t = db.session.get(Team, current_user.team.id)
+    t = db.session.get(Team, current_user.team.id) #type: ignore
 
     if form.validate_on_submit():
         t.info = form.info.data
@@ -141,18 +140,14 @@ def teams():
     form.info.data = t.info
     return render_template("wklb/teams.html", form=form, teams=teams)
 
-@bp.route("/info", strict_slashes=False)
-def info():
-    return render_template("wklb/info.html", registerCode=registerCode)
-
-@bp.route("/submitResult", methods=("GET", "POST"))
+@bp.route("/submitResult", methods=("POST",))
 @login_required
 def submitResult():
     form = submitResult_Form()
     form.visiting_team.choices = getVisitingTeamChoices()
 
     if form.validate_on_submit():
-        g = Game(home_team_id=current_user.team.id,
+        g = Game(home_team_id=current_user.team.id, #type: ignore
                  visiting_team_id=form.visiting_team.data,
                  home_team_pts=form.home_team_pts.data,
                  visiting_team_pts=form.visiting_team_pts.data,
@@ -165,8 +160,17 @@ def submitResult():
             db.session.rollback()
             flash(f"An database error occured!", "danger")
 
-        return redirect(url_for("wklb.results"))
+    return redirect(url_for("wklb.results"))
 
-    return render_template("wklb/submitResult.html", form=form,
-                           home_team=current_user.team.name, text="Submit Game")
+@bp.route("/newTeam", methods=("GET",))
+def newTeam():
+    from .config import registerCode as rCode
+    return render_template("wklb/newTeam.html", registerCode=rCode)
 
+@bp.route("/manifest", methods=("GET",))
+def manifest():
+    return render_template("wklb/manifest.html")
+
+@bp.route("/about", methods=("GET",))
+def about():
+    return render_template("wklb/about.html")

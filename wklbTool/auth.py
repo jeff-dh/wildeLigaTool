@@ -42,7 +42,7 @@ def login():
             next_page = request.form.get('next_page')
             assert next_page
             if "None" in next_page:
-                return redirect(url_for("wklb.info"))
+                return redirect("/")
             else:
                 return redirect(next_page)
 
@@ -90,6 +90,6 @@ def register():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for("wklb.info"))
+    return redirect("/")
 
 
