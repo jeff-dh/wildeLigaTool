@@ -10,10 +10,10 @@
         {{ form.csrf_token }}
         {{ current_user.email }}
         <br/><br/>
-        {{ form.info(rows="5", class_="form-control mb-1",
+        {{ form.info(rows="5", class_="form-control text-dark mb-1",
                         placeholder="Team-Info: weitere Kontakt-Infos, Heimspiel-Ort,...") }}
 
-        <div class="text-center">
+        <div class="text-center p-1">
             <button type="button"
                     class="btn btn-secondary btn-sm"
                     data-bs-dismiss="modal">Abbrechen</button>

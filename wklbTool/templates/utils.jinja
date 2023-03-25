@@ -9,7 +9,7 @@
 {%- endmacro %}
 
 {% macro inputField(field) -%}
-    {{ field(class="form-control mb-1", placeholder=field.label.text) }}
+    {{ field(class="form-control text-dark mb-1", placeholder=field.label.text) }}
     {{ errorBox(field.errors) }}
 {%- endmacro %}
 

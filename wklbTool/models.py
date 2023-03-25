@@ -10,12 +10,9 @@ class User(UserMixin, db.Model): #type: ignore
     id = Column(Integer, primary_key=True)
     email = Column(Text, nullable=False)
     password = Column(Text, nullable=False)
-    team : Mapped["Team"] = relationship("Team", back_populates="user", uselist=False)
 
-    def verify_password(self, password):
-        import bcrypt
-        return bcrypt.checkpw(password, self.password)
-
+    team : Mapped["Team"] = \
+            relationship("Team", back_populates="user", uselist=False)
 
 class Team(db.Model): #type: ignore
     __tablename__ = "teams"
@@ -25,7 +22,8 @@ class Team(db.Model): #type: ignore
     info = Column(Text, nullable=False, default="")
     user_id = Column(ForeignKey(User.id), nullable=False)
 
-    user : Mapped["User"] = relationship("User", back_populates="team", uselist=False)
+    user : Mapped["User"] = \
+            relationship("User", back_populates="team", uselist=False)
 
 class Game(db.Model): #type: ignore
     __tablename__ = "games"
@@ -37,13 +35,8 @@ class Game(db.Model): #type: ignore
     visiting_team_pts = Column(Integer, nullable=False)
     date = Column(Date, nullable=False)
 
-    home_team : Mapped["Team"] = relationship("Team", foreign_keys=home_team_id, uselist=False)
-    visiting_team : Mapped["Team"] = relationship("Team", foreign_keys=visiting_team_id, uselist=False)
-
-if __name__ == "__main__":
-	from . import create_app, db
-
-	app = create_app()
-	app.app_context().push()
-	db.create_all()
+    home_team : Mapped["Team"] = \
+            relationship("Team", foreign_keys=home_team_id, uselist=False)
+    visiting_team : Mapped["Team"] = \
+            relationship("Team", foreign_keys=visiting_team_id, uselist=False)
 

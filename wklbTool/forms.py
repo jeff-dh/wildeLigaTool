@@ -15,19 +15,24 @@ class login_form(FlaskForm):
     email = StringField("E-Mail",
                         validators=[InputRequired(), Email(), Length(1, 64)],
                         render_kw={"autofocus":True})
-    password = PasswordField("Passwort", validators=[InputRequired(), Length(min=6, max=72)])
+
+    password = PasswordField("Passwort",
+                             validators=[InputRequired(), Length(min=6, max=72)])
     submit = SubmitField("Einloggen")
 
 class register_form(FlaskForm):
     email = StringField("E-Mail",
                         validators=[InputRequired(), Email(), Length(1, 64)],
                         render_kw={"autofocus":True})
-    password = PasswordField("Passwort", validators=[InputRequired(), Length(6, 72)])
+
+    password = PasswordField("Passwort",
+                             validators=[InputRequired(), Length(6, 72)])
+
     cpassword = PasswordField("Passwort bestätigen",
         validators=[
             InputRequired(),
             Length(6, 72),
-            EqualTo("password", message="Passwords must match !"),
+            EqualTo("password", message="Passwört stimmen nicht überein!"),
         ]
     )
     teamname = StringField("Team-Name", validators=[InputRequired(), Length(2, 64)])
@@ -57,10 +62,6 @@ class submitResult_Form(FlaskForm):
     home_team_pts = IntegerField(validators=[InputRequired(), NumberRange(min=0)], default=0)
     visiting_team_pts = IntegerField(validators=[InputRequired(), NumberRange(min=0)], default=0)
     submit = SubmitField("Ergebnis eintragen")
-
-    # def validate_visiting_team_pts(self, visiting_team_pts):
-    #     if visiting_team_pts.data == self.home_team_pts.data:
-    #         raise ValidationError("Unentschieden gibt es nach den Regeln nicht....")
 
 class teamInfo_Form(FlaskForm):
     info = TextAreaField(render_kw={"autofocus":True})

@@ -1,7 +1,7 @@
 from datetime import date
-from flask import Blueprint, render_template, redirect, flash, request, url_for
+from flask import Blueprint, abort, render_template, redirect, flash, request, url_for
 
-from sqlalchemy import asc, desc, func
+from sqlalchemy import asc, desc, func, text
 from sqlalchemy.exc import SQLAlchemyError
 from flask_login import current_user, login_required
 
@@ -63,7 +63,9 @@ def standings():
     tableStmt = db.select(Team.id, Team.name, numberOfResults, gamesWon,
                           drawWon, drawLost, gamesLost, wonSets, lostSets, pts)\
                                   .join(User)\
-                                  .order_by(desc("pts"))
+                                  .order_by(desc("pts"))\
+                                  .order_by(desc("wonSets"))\
+                                  .order_by(desc(text("wonSets - lostSets")))
 
     table = db.session.execute(tableStmt).all()
 
@@ -76,35 +78,55 @@ def standings():
 
 
 @bp.route("/deleteResult/<id>", methods=("POST",), strict_slashes=False)
+@login_required
 def deleteResult(id):
     if request.method == "POST":
+        g = db.session.get(Game, id)
+        if g.home_team.user_id != current_user.id:
+            return abort(403)
+
         try:
-            stmt = db.delete(Game)\
-                       .where(Game.id==id)
-            db.session.execute(stmt)
+            db.session.delete(g)
             db.session.commit()
         except SQLAlchemyError:
             db.session.rollback()
             flash(f"An database error occured!", "danger")
-    return redirect(url_for("wklb.results"))
+        return redirect(url_for("wklb.results"))
 
-def getVisitingTeamChoices():
-    played_teams = db.select(Game.visiting_team_id)\
-                    .where(Game.home_team_id == current_user.team.id) #type: ignore
+    assert(False)
 
-    stmt = db.select(Team)\
-                .where(Team.id != current_user.team.id)\
-                .where(Team.id.not_in(played_teams))\
-                .order_by(asc("name"))
-    teams = db.session.execute(stmt).scalars().all()
-
-    return [(t.id, t.name) for t in teams]
-
-@bp.route("/results", methods=("GET",), strict_slashes=False)
+@bp.route("/results", methods=("GET", "POST"), strict_slashes=False)
 def results():
     form = submitResult_Form()
 
-    # the results itself
+    if current_user.is_authenticated: #type: ignore
+        # the possible opposing teams
+        played_teams = db.select(Game.visiting_team_id)\
+                        .where(Game.home_team_id == current_user.team.id) #type: ignore
+
+        stmt = db.select(Team)\
+                    .where(Team.id != current_user.team.id)\
+                    .where(Team.id.not_in(played_teams))\
+                    .order_by(asc("name"))
+        teams = db.session.execute(stmt).scalars().all()
+
+        form.visiting_team.choices = [(t.id, t.name) for t in teams]
+
+        if form.validate_on_submit():
+            g = Game(home_team_id=current_user.team.id, #type: ignore
+                    visiting_team_id=form.visiting_team.data,
+                    home_team_pts=form.home_team_pts.data,
+                    visiting_team_pts=form.visiting_team_pts.data,
+                    date = date.today())
+
+            try:
+                db.session.add(g)
+                db.session.commit()
+            except SQLAlchemyError:
+                db.session.rollback()
+                flash(f"An database error occured!", "danger")
+            return redirect(url_for("wklb.results"))
+
     stmt = db.select(Game)\
                .order_by(Game.date.desc())\
                .order_by(Game.id.desc())
@@ -112,10 +134,6 @@ def results():
 
     teamInfos = set(r.home_team for r in res)\
                     .union(set(r.visiting_team for r in res))
-
-    # the possible opposing teams
-    if current_user.is_authenticated: #type: ignore
-        form.visiting_team.choices = getVisitingTeamChoices()
 
     return render_template("wklb/results.html",
                            rows=res, form=form, teamInfos=teamInfos)
@@ -139,28 +157,6 @@ def teams():
 
     form.info.data = t.info
     return render_template("wklb/teams.html", form=form, teams=teams)
-
-@bp.route("/submitResult", methods=("POST",))
-@login_required
-def submitResult():
-    form = submitResult_Form()
-    form.visiting_team.choices = getVisitingTeamChoices()
-
-    if form.validate_on_submit():
-        g = Game(home_team_id=current_user.team.id, #type: ignore
-                 visiting_team_id=form.visiting_team.data,
-                 home_team_pts=form.home_team_pts.data,
-                 visiting_team_pts=form.visiting_team_pts.data,
-                 date = date.today())
-
-        try:
-            db.session.add(g)
-            db.session.commit()
-        except SQLAlchemyError:
-            db.session.rollback()
-            flash(f"An database error occured!", "danger")
-
-    return redirect(url_for("wklb.results"))
 
 @bp.route("/newTeam", methods=("GET",))
 def newTeam():

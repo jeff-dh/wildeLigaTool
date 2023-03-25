@@ -18,14 +18,16 @@
 {% macro teamInfo(team, current_user) -%}
     {% if current_user.is_authenticated %}
         {{modal("teamInfo" + team.id.__repr__(), team.name)}}
-            {{ team.user.email }}
-            <br/><br/>
-            {% for line in team.info.split("\n") %}
-                {{ line }}
-                {% if not loop.last %}
-                    <br>
-                {% endif %}
-            {% endfor %}
+                <span class="text-secondary">{{ team.user.email }}</span>
+            <div class="text-start">
+                <br/>
+                {% for line in team.info.split("\n") %}
+                    {{ line }}
+                    {% if not loop.last %}
+                        <br>
+                    {% endif %}
+                {% endfor %}
+            </div>
             <br/>
             <button type="button"
                     class="btn btn-secondary btn-sm"

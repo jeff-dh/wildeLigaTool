@@ -6,7 +6,7 @@
 
 {{modal("submitResultBox", "Spielergebnis eintragen")}}
 
-    <form action="{{ url_for('wklb.submitResult') }}" method="POST">
+    <form action="{{ url_for('wklb.results') }}" method="POST">
         {{ form.csrf_token }}
 
         {{ errorBox(form.visiting_team_pts.errors) }}
@@ -16,16 +16,16 @@
                 <tr>
                     <td> {{ current_user.team.name }} </td>
                     <td> : </td>
-                    <td> {{ form.visiting_team(class_="form-control",
+                    <td> {{ form.visiting_team(class_="form-control text-dark",
                                                placeholder="Gast Mannschaft")}}
                     </td>
                 </tr>
                 <tr>
-                    <td> {{ form.home_team_pts(class_="form-control",
+                    <td> {{ form.home_team_pts(class_="form-control text-dark",
                                                placeholder="0")}}
                     </td>
                     <td> </td>
-                    <td> {{ form.visiting_team_pts(class_="form-control",
+                    <td> {{ form.visiting_team_pts(class_="form-control text-dark",
                                                    placeholder="0")}}
                     </td>
                 </tr>
