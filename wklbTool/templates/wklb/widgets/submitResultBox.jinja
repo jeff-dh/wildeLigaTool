@@ -1,11 +1,12 @@
-{% from "utils.jinja" import modal, endmodal, show_modal %}
-
-<button class="btn btn-primary btn-sm mb-1" {{ show_modal("submitResultBox") }}>
+<button class="btn btn-primary btn-sm mb-1"
+        data-bs-toggle="collapse"
+        data-bs-target="#submitResultBox">
     Spielergebnis eintragen
 </button>
 
-{{modal("submitResultBox", "Spielergebnis eintragen")}}
-
+<div class="collapse bg-white p-0 rounded rounded-4"
+     id="submitResultBox">
+    <h3>Ergebnis eintragen</h3>
     <form action="{{ url_for('wklb.results') }}" method="POST">
         {{ form.csrf_token }}
 
@@ -34,7 +35,8 @@
 
         <button type="button"
                 class="btn btn-sm btn-secondary"
-                data-bs-dismiss="modal">Abbrechen</button>
+                data-bs-target="#submitResultBox"
+                data-bs-toggle="collapse">Abbrechen</button>
         {{ form.submit(class_="btn btn-primary btn-sm") }}
     </form>
-{{ endmodal }}
+</div>

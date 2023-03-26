@@ -1,0 +1,29 @@
+{% macro deleteIcon(id) -%}
+    <a href="#" data-bs-toggle="collapse" data-bs-target="#deleteBox{{id}}">
+        <span class="bi bi-trash3-fill text-primary" title="Ergebnis löschen"></span>
+    </a>
+{%- endmacro %}
+
+{% macro deleteBox(id, team1_name, team2_name, style) -%}
+<tr class="{{style}} p-0 m-0">
+    <td colspan=5 class="px-1 py-0 m-0">
+        <div class="collapse bg-white rounded rounded-4"
+             id="deleteBox{{id}}">
+            <br>
+            <form action={{url_for("wklb.deleteResult", id=id)}} method="POST">
+                Sind Sie sicher, dass Sie das Ergebnis des Spiels <b>{{
+                team1_name }}</b> gegen <b>{{team2_name}}</b> löschen wollen?
+
+                <br/><br/>
+                <button type="button"
+                        class="btn btn-secondary btn-sm"
+                        data-bs-target="#deleteBox{{id}}"
+                        data-bs-toggle="collapse">Abbrechen</button>
+                <button type="submit"
+                        class="btn btn-primary btn-sm">Ergebnis Löschen</button>
+            </form>
+        </div>
+    </td>
+</tr>
+
+{%- endmacro %}

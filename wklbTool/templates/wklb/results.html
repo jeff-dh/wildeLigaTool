@@ -1,48 +1,49 @@
 {% extends "base.html" %}
 
 {% from "utils.jinja" import errorBox %}
-{% from "wklb/modals/deleteResultBox.jinja" import deleteBox %}
-{% from "wklb/modals/teamInfo.jinja" import teamInfo, teamInfoLink %}
+{% from "wklb/widgets/deleteResultBox.jinja" import deleteBox, deleteIcon %}
 
 {% block content%}
 
-{% for ti in teamInfos %}
-    {{teamInfo(ti, current_user)}}
-{% endfor %}
-
 <div class="table-responsive">
-    <table class="table table-sm small rounded rounded-4 overflow-hidden caption-top table-striped table-light">
+    <table class="table table-sm small rounded rounded-4 overflow-hidden caption-top">
         <caption class="text-center"><h3>Ergebnisse</h3></caption>
-        <thead>
+        <thead class="table-light">
             <th/><th>Heim</th> <th>Gast</th> <th>Ergebnis</th> <th/>
         </thead>
         <tbody>
             {% if current_user.is_authenticated %}
-            <tr>
+            <tr class="table-primary">
                 <td colspan="5">
-                    {% include 'wklb/modals/submitResultBox.jinja' %}
+                    {% include 'wklb/widgets/submitResultBox.jinja' %}
                 </td>
             </tr>
             {% endif %}
             {% for r in rows %}
-            <tr>
+            <tr class="{{'table-light' if rows.index(r) % 2 == 0 else 'table-primary'}}">
                 <td>
                     <span class="small">{{ r.date.strftime("%d.%m.%y") }}</span>
                 </td>
                 <td>
-                    {{teamInfoLink(r.home_team, current_user)}}
+                    <span class="text-primary"><b>{{r.home_team.name}}</></span>
                 </td>
                 <td>
-                    {{teamInfoLink(r.visiting_team, current_user)}}
+                    <span class="text-primary"><b>{{r.visiting_team.name}}</></span>
                 </a>
                 </td>
                 <td>{{ r.home_team_pts }} : {{ r.visiting_team_pts }}</td>
                 <td>
                     {% if current_user.is_authenticated and current_user.id == r.home_team.user.id %}
-                        {{ deleteBox(r.id, r.home_team.name, r.visiting_team.name) }}
+                        {{ deleteIcon(r.id) }}
                     {% endif %}
                 </td>
             </tr>
+
+            {% if current_user.is_authenticated and current_user.id == r.home_team.user.id %}
+                {{ deleteBox(r.id, r.home_team.name, r.visiting_team.name,
+                             'table-light' if rows.index(r) % 2 == 0 else 'table-primary') }}
+            {% endif %}
+
             {% endfor %}
         </tbody>
     </table>

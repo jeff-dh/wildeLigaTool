@@ -1,12 +1,6 @@
 {% extends "base.html" %}
 
-{% from "wklb/modals/teamInfo.jinja" import teamInfo, teamInfoLink %}
-
 {% block content%}
-
-{% for t in teamInfos %}
-    {{ teamInfo(t, current_user) }}
-{% endfor %}
 
 <div class="table-responsive">
     <table class="table table-sm small rounded rounded-4 overflow-hidden caption-top table-hover table-light align-middle">
@@ -19,7 +13,7 @@
                 <tr>
                     <td><b>{{ table.index(t) + 1 }}</b></td>
                     <td class="text-start">
-                        {{ teamInfoLink(t, current_user) }}
+                        <span class="text-primary"><b>{{t.name}}</></span>
                     </td>
                     <td><b>{{ t.numberOfResults }}</b></td>
                     <td class="right-border"><b>{{ t.pts }}</b></td>

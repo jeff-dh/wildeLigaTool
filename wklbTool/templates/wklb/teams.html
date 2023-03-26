@@ -31,15 +31,16 @@
                     </td>
 
                     <td class="text-start small align-middle">
-                        <div class="text-end">
-                            {% include "wklb/modals/teamInfoEdit.jinja" %}
-                        </div>
-                        {% for line in current_user.team.info.split("\n") %}
-                            {{ line }}
-                            {% if not loop.last %}
-                                <br>
-                            {% endif %}
-                        {% endfor %}
+                        <form class="text-start"
+                              action={{ url_for("wklb.teams")}}
+                              method="POST">
+                            {{ form.csrf_token }}
+                            {{ form.info(rows="3", class_="form-control text-dark mb-1",
+                                            placeholder="weitere Kontakt-Infos, Heimspiel-Ort,...") }}
+                            <div class="text-center p-1">
+                                {{ form.submit(class_="btn btn-sm py-0 my-0 btn-primary") }}
+                            </div>
+                        </form>
                     </td>
                 </tr>
                 {% for t in teams %}

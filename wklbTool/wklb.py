@@ -69,12 +69,8 @@ def standings():
 
     table = db.session.execute(tableStmt).all()
 
-    teamInfosStmt = db.select(Team)
-    teamInfos = db.session.execute(teamInfosStmt).scalars().all()
-
     return render_template("wklb/standings.html",
-                           table=table,
-                           teamInfos=teamInfos)
+                           table=table)
 
 
 @bp.route("/deleteResult/<id>", methods=("POST",), strict_slashes=False)
@@ -132,11 +128,7 @@ def results():
                .order_by(Game.id.desc())
     res = db.session.execute(stmt).scalars().all()
 
-    teamInfos = set(r.home_team for r in res)\
-                    .union(set(r.visiting_team for r in res))
-
-    return render_template("wklb/results.html",
-                           rows=res, form=form, teamInfos=teamInfos)
+    return render_template("wklb/results.html", rows=res, form=form)
 
 @bp.route("/teams", methods=(["GET", "POST"]), strict_slashes=False)
 @login_required

@@ -13,28 +13,3 @@
     {{ errorBox(field.errors) }}
 {%- endmacro %}
 
-{% macro show_modal(id) -%}
-    data-bs-toggle="modal" data-bs-target="#{{id}}"
-{%- endmacro %}
-
-{% macro modal(id, title) -%}
-<div class="modal" tabindex="-1" id="{{id}}">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title">{{title}}</h3>
-                    <button type="button"
-                            class="btn-close"
-                            data-bs-dismiss="modal"
-                            aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-{%- endmacro %}
-
-{% macro endmodal() -%}
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-{%- endmacro %}
