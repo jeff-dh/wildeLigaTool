@@ -31,16 +31,35 @@
                     </td>
 
                     <td class="text-start small align-middle">
-                        <form class="text-start"
-                              action={{ url_for("wklb.teams")}}
-                              method="POST">
-                            {{ form.csrf_token }}
-                            {{ form.info(rows="6", cols="20", class_="form-control text-dark mb-1",
-                                            placeholder="weitere Kontakt-Infos, Heimspiel-Ort,...") }}
-                            <div class="text-center p-1">
-                                {{ form.submit(class_="btn btn-sm py-0 my-0 btn-primary") }}
-                            </div>
-                        </form>
+                        <div class="collapse show multi-collapse text-dark" id="teamInfoShow">
+                            {% for line in current_user.team.info.split("\n") %}
+                                {{ line }}
+                                {% if not loop.last %}
+                                    <br>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <div class="text-center">
+                            <a href="#"
+                               class="btn btn-sm btn-primary my-0 py-0 multi-collapse collapse show"
+                               data-bs-toggle="collapse"
+                               data-bs-target=".multi-collapse">
+                                Bearbeiten
+                            </a>
+                        </div>
+                        <div class="collapse multi-collapse" id="teamInfoEdit">
+                            <form class="text-start"
+                                action={{ url_for("wklb.teams")}}
+                                method="POST">
+                                {{ form.csrf_token }}
+                                {{ form.info(rows="6",
+                                             class_="form-control text-dark",
+                                             placeholder="weitere Kontakt-Infos, Heimspiel-Ort,...") }}
+                                <div class="text-center py-1">
+                                    {{ form.submit(class_="btn btn-sm py-0 my-0 btn-primary") }}
+                                </div>
+                            </form>
+                        </div>
                     </td>
                 </tr>
                 {% for t in teams %}
