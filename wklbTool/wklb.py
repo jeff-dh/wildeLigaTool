@@ -64,8 +64,8 @@ def standings():
                           drawWon, drawLost, gamesLost, wonSets, lostSets, pts)\
                                   .join(User)\
                                   .order_by(desc("pts"))\
-                                  .order_by(desc("wonSets"))\
-                                  .order_by(desc(text("wonSets - lostSets")))
+                                  .order_by(desc(text("wonSets - lostSets")))\
+                                  .order_by(desc("wonSets"))
 
     table = db.session.execute(tableStmt).all()
 
