@@ -3,6 +3,12 @@
 {% from "utils.jinja" import inputField %}
 
 {% block content%}
+    <br/>
+    <h3 class="text-secondary">Neues Team anmelden</h3>
+    <small>Bitte vor'm Anmelden einmal
+           <a href="{{url_for("wklb.newTeam")}}">Neues Team anmelden</a>
+           lesen!</small>
+    <br/><br/>
     <form action="{{ request.path }}" method="POST">
         {{ form.csrf_token }}
 
