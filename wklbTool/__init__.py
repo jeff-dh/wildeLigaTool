@@ -30,5 +30,5 @@ def create_app():
     migrate = Migrate()
     migrate.init_app(app, db)
 
-    app.add_url_rule("/", "wklb.standings")
+    app.add_url_rule("/", "wklb.news")
     return app

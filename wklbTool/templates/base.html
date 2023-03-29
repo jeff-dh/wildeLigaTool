@@ -12,12 +12,14 @@
     <link href="{{ url_for('static', filename='bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='wklb.css') }}" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.6.3.js"></script>
     <title>Ganz WildeKickerLigaBremen und umzu</title>
+
 </head>
 
 <body>
-    <div class="container">
-        <div class="row mx-0 my-4">
+    <div class="container py-3">
+        <div class="row mx-0 my-0">
             <div class="col-lg-8 col-md-10 m-auto p-0 card">
 
                     <div class="card-header bg-light">
@@ -44,6 +46,10 @@
                             </h2>
 
                             <a class="link-primary"
+                               href="{{url_for('wklb.news')}}">
+                                News
+                            </a> |
+                            <a class="link-primary"
                                href="{{url_for('wklb.standings')}}">
                                 Tabelle
                             </a> |
@@ -55,13 +61,13 @@
                                href="{{url_for('wklb.teams')}}">
                                 Teams
                             </a> |
-                            <a class="m-0 p-0 btn btn-link link-primary"
+                            <a class="link-primary"
                                style="text-decoration: none"
                                href="#"
                                id="infoDropDown"
                                data-bs-toggle="dropdown">
                                 Info
-                            </a>
+                            </a> |
                             <ul class="dropdown-menu" aria-labelledby="infoDropDown">
                                 <li><a class="dropdown-item"
                                        href={{url_for("wklb.about")}}>
@@ -76,6 +82,10 @@
                                     Manifest / Regeln
                                 </a></li>
                             </ul>
+                            <a class="link-primary"
+                               href="https://p624608.webspaceconfig.de/wklbBoard/">
+                                Forum
+                            </a>
 
                         </div>
 

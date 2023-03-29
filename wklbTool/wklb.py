@@ -150,15 +150,25 @@ def teams():
     form.info.data = t.info
     return render_template("wklb/teams.html", form=form, teams=teams)
 
+def dynamicContent(url, title):
+    return render_template("wklb/dynamicContent.html", url=url, title=title)
+
 @bp.route("/newTeam", methods=("GET",))
 def newTeam():
-    from .config import registerCode as rCode
-    return render_template("wklb/newTeam.html", registerCode=rCode)
+    url = "https://p624608.webspaceconfig.de/wklbBoard/printthread.php?tid=3"
+    return dynamicContent(url, "Neues Team anmelden")
 
 @bp.route("/manifest", methods=("GET",))
 def manifest():
-    return render_template("wklb/manifest.html")
+    url = "https://p624608.webspaceconfig.de/wklbBoard/printthread.php?tid=4"
+    return dynamicContent(url, "Manifest / Regeln")
 
 @bp.route("/about", methods=("GET",))
 def about():
-    return render_template("wklb/about.html")
+    url = "https://p624608.webspaceconfig.de/wklbBoard/printthread.php?tid=2"
+    return dynamicContent(url, "Über die Liga")
+
+@bp.route("/news", methods=("GET",))
+def news():
+    url = "https://p624608.webspaceconfig.de/wklbBoard/portal.php"
+    return dynamicContent(url, "News")
