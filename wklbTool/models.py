@@ -1,4 +1,4 @@
-from sqlalchemy import Column, ForeignKey, Integer, Text, Date
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, Text, Date
 from sqlalchemy.orm import Mapped, relationship
 from flask_login import UserMixin
 
@@ -13,6 +13,12 @@ class User(UserMixin, db.Model): #type: ignore
 
     team : Mapped["Team"] = \
             relationship("Team", back_populates="user", uselist=False)
+
+class Season(db.Model): #type: ignore
+    __tablename__ = "seasons"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(Text, nullable=False)
 
 class Team(db.Model): #type: ignore
     __tablename__ = "teams"
@@ -34,6 +40,7 @@ class Game(db.Model): #type: ignore
     home_team_pts = Column(Integer, nullable=False)
     visiting_team_pts = Column(Integer, nullable=False)
     date = Column(Date, nullable=False)
+    season_id = Column(ForeignKey(Season.id), nullable=False)
 
     home_team : Mapped["Team"] = \
             relationship("Team", foreign_keys=home_team_id, uselist=False)

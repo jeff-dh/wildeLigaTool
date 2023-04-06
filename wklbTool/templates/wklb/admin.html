@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% from "utils.jinja" import wklbTitle, inputField %}
+
+{% block content %}
+    {{ wklbTitle("Neue Saison starten") }}
+
+    <div style="text-align: justify;">
+        Wenn eine neue Saison gestartet wird, wird die bisherige Saison entgueltig
+        beendet! Dieser Vorgang kann (ohne manuellen Eingriff in die Datenbank)
+        nicht rueckgaengig gemacht werden!<br/>
+        Alle Spiele, die ab diesem Zeitpunkt eingetragen werden, gelten fuer die
+        neue Saison.<br/>
+
+        <br/>
+        <form action="{{ request.path }}" method="POST"
+              onsubmit="return confirm('Sicher eine neue Saison starten? Die alte ist damit endgueltig beendet!');">
+
+            {{ form.csrf_token }}
+
+            {{ inputField(form.name) }}
+            <br/>
+            <div class="text-center">
+                {{ form.submit(class_="btn btn-primary") }}
+            </div>
+        </form>
+    </div>
+{% endblock %}

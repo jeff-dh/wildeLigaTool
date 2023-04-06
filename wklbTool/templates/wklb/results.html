@@ -12,6 +12,8 @@
             <th/><th>Heim</th> <th>Gast</th> <th>Ergebnis</th> <th/>
         </thead>
         <tbody>
+
+            <!-- Submit Result Box -->
             {% if current_user.is_authenticated %}
             <tr class="table-primary">
                 <td colspan="5">
@@ -19,30 +21,34 @@
                 </td>
             </tr>
             {% endif %}
-            {% for r in rows %}
-            <tr class="{{'table-light' if rows.index(r) % 2 == 0 else 'table-primary'}}">
-                <td>
-                    <span class="small">{{ r.date.strftime("%d.%m.%y") }}</span>
-                </td>
-                <td>
-                    <span class="text-primary"><b>{{r.home_team.name}}</></span>
-                </td>
-                <td>
-                    <span class="text-primary"><b>{{r.visiting_team.name}}</></span>
-                </a>
-                </td>
-                <td>{{ r.home_team_pts }} : {{ r.visiting_team_pts }}</td>
-                <td>
-                    {% if current_user.is_authenticated and current_user.id == r.home_team.user.id %}
-                        {{ deleteIcon(r.id) }}
-                    {% endif %}
-                </td>
-            </tr>
 
-            {% if current_user.is_authenticated and current_user.id == r.home_team.user.id %}
-                {{ deleteBox(r.id, r.home_team.name, r.visiting_team.name,
-                             'table-light' if rows.index(r) % 2 == 0 else 'table-primary') }}
-            {% endif %}
+            <!-- Results -->
+            {% for r in rows %}
+                <tr class="{{'table-light' if rows.index(r) % 2 == 0 else 'table-primary'}}">
+                    <td>
+                        <span class="small">{{ r.date.strftime("%d.%m.%y") }}</span>
+                    </td>
+                    <td>
+                        <span class="text-primary"><b>{{r.home_team.name}}</></span>
+                    </td>
+                    <td>
+                        <span class="text-primary"><b>{{r.visiting_team.name}}</></span>
+                    </a>
+                    </td>
+                    <td>{{ r.home_team_pts }} : {{ r.visiting_team_pts }}</td>
+                    <td>
+                        <!-- delete icon -->
+                        {% if current_user.is_authenticated and current_user.id == r.home_team.user.id %}
+                            {{ deleteIcon(r.id) }}
+                        {% endif %}
+                    </td>
+                </tr>
+
+                <!-- delete box -->
+                {% if current_user.is_authenticated and current_user.id == r.home_team.user.id %}
+                    {{ deleteBox(r.id, r.home_team.name, r.visiting_team.name,
+                                'table-light' if rows.index(r) % 2 == 0 else 'table-primary') }}
+                {% endif %}
 
             {% endfor %}
         </tbody>

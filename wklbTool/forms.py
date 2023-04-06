@@ -67,3 +67,9 @@ class teamInfo_Form(FlaskForm):
     info = TextAreaField(render_kw={"autofocus":True})
     submit = SubmitField("Speichern")
 
+class adminSeason_form(FlaskForm):
+    name = StringField("Saison-Name",
+                       validators=[InputRequired()],
+                       render_kw={"autofocus": True})
+    submit = SubmitField("Neue Saison starten!")
+

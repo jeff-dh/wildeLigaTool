@@ -27,5 +27,13 @@
                 {% endfor %}
         </tbody>
     </table>
+
+    <div class="bg-light rounded rounded-4 small">
+        <b>Teams ohne Spiele in der aktuellen Saison:</b>
+        {% for t in teamsWithoutGames %}
+        <b><span class="text-primary">{{ t }}</span></b>
+        {% if not loop.last %},{% endif %}
+        {% endfor %}
+    </div>
 </div>
 {% endblock %}

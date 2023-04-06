@@ -4,44 +4,70 @@ from flask import Blueprint, abort, render_template, redirect, flash, request, u
 from sqlalchemy import asc, desc, func, text
 from sqlalchemy.exc import SQLAlchemyError
 from flask_login import current_user, login_required
+from flask_basicauth import BasicAuth
 
-from .models import Team, Game, User
+from .models import Team, Game, User, Season
+from .forms import adminSeason_form, teamInfo_Form, submitResult_Form
+
 from . import db
-from .forms import teamInfo_Form, submitResult_Form
+from . import config
 
 bp = Blueprint("wklb", __name__)
 
+basic_auth = BasicAuth()
+
 def init_wklb(app):
     app.register_blueprint(bp)
+    app.config["BASIC_AUTH_USERNAME"] = "admin"
+    app.config["BASIC_AUTH_PASSWORD"] = config.adminPassword
+    basic_auth.init_app(app)
+
+def getSeasonId():
+    seasonStmt = db.select(func.max(Season.id))
+    season_id = db.session.execute(seasonStmt).scalars().one()
+    if season_id == None:
+        flash("Es wurde noch keine Saison angelegt!", "danger")
+    return season_id
 
 @bp.route("/standings", methods=("GET",), strict_slashes=False)
 def standings():
+    season_id = getSeasonId()
+
     def home(): return Game.home_team_id == Team.id
     def visit(): return Game.visiting_team_id == Team.id
     def homePtsDiff(): return Game.home_team_pts - Game.visiting_team_pts
     def visitPtsDiff(): return Game.visiting_team_pts - Game.home_team_pts
+    def season():
+        if season_id == None:
+            return False
+        return Game.season_id == season_id
+
 
     numberOfResults = db.select(func.count(Game.id)).\
+                        filter(season()).\
                         filter(home() | visit()).\
                         label("numberOfResults")
 
     gamesWon = db.select(func.count(Game.id)).\
+                filter(season()).\
                 filter((home() & (homePtsDiff() > 1)) |
                        (visit() & (visitPtsDiff() > 1))).\
                 label("wins")
 
     gamesLost = db.select(func.count(Game.id)).\
+                filter(season()).\
                 filter((home() & (homePtsDiff() < -1)) |
                        (visit() & (visitPtsDiff() < -1))).\
                 label("loses")
 
-
     drawWon = db.select(func.count(Game.id)).\
+                filter(season()).\
                 filter((home() & (homePtsDiff() == 1)) |
                        (visit() & (visitPtsDiff() == 1))).\
                 label("drawWins")
 
     drawLost = db.select(func.count(Game.id)).\
+                filter(season()).\
                 filter((home() & ((homePtsDiff() == -1) | (homePtsDiff() == 0))) |
                        (visit() & ((visitPtsDiff() == -1) | (visitPtsDiff() == 0)))).\
                 label("drawLoses")
@@ -49,12 +75,16 @@ def standings():
     pts = (gamesLost * 1 + drawLost * 2 + drawWon * 3 + gamesWon * 4).label("pts")
 
     homeWonSets = db.select(func.coalesce(func.sum(Game.home_team_pts), 0)).\
+                    filter(season()).\
                     filter(home()).label("hws")
     homeLostSets = db.select(func.coalesce(func.sum(Game.visiting_team_pts), 0)).\
+                    filter(season()).\
                     filter(home()).label("hls")
     visitWonSets = db.select(func.coalesce(func.sum(Game.visiting_team_pts), 0)).\
+                    filter(season()).\
                     filter(visit()).label("vws")
     visitLostSets = db.select(func.coalesce(func.sum(Game.home_team_pts), 0)).\
+                    filter(season()).\
                     filter(visit()).label("vls")
 
     wonSets = (homeWonSets + visitWonSets).label("wonSets")
@@ -65,12 +95,16 @@ def standings():
                                   .join(User)\
                                   .order_by(desc("pts"))\
                                   .order_by(desc(text("wonSets - lostSets")))\
-                                  .order_by(desc("wonSets"))
+                                  .order_by(desc("wonSets"))\
+                                  .filter(text("numberOfResults > 0"))
 
     table = db.session.execute(tableStmt).all()
 
+    teamsWithoutGamesStmt = db.select(Team.name, numberOfResults).filter(text("numberOfResults == 0"))
+    teamsWithoutGames = db.session.execute(teamsWithoutGamesStmt).scalars().all()
+
     return render_template("wklb/standings.html",
-                           table=table)
+                           table=table, teamsWithoutGames=teamsWithoutGames)
 
 
 @bp.route("/deleteResult/<id>", methods=("POST",), strict_slashes=False)
@@ -78,7 +112,7 @@ def standings():
 def deleteResult(id):
     if request.method == "POST":
         g = db.session.get(Game, id)
-        if g.home_team.user_id != current_user.id:
+        if g.home_team.user_id != current_user.id: #type: ignore
             return abort(403)
 
         try:
@@ -95,11 +129,15 @@ def deleteResult(id):
 def results():
     form = submitResult_Form()
 
+    season_id = getSeasonId()
+
     if current_user.is_authenticated: #type: ignore
         # the possible opposing teams
         played_teams = db.select(Game.visiting_team_id)\
-                        .where(Game.home_team_id == current_user.team.id) #type: ignore
+                        .filter(Game.season_id == season_id)\
+                        .filter(Game.home_team_id == current_user.team.id) #type: ignore
 
+        assert(isinstance(current_user, User))
         stmt = db.select(Team)\
                     .where(Team.id != current_user.team.id)\
                     .where(Team.id.not_in(played_teams))\
@@ -113,7 +151,8 @@ def results():
                     visiting_team_id=form.visiting_team.data,
                     home_team_pts=form.home_team_pts.data,
                     visiting_team_pts=form.visiting_team_pts.data,
-                    date = date.today())
+                    date = date.today(),
+                    season_id = season_id)
 
             try:
                 db.session.add(g)
@@ -125,7 +164,8 @@ def results():
 
     stmt = db.select(Game)\
                .order_by(Game.date.desc())\
-               .order_by(Game.id.desc())
+               .order_by(Game.id.desc())\
+               .filter(Game.season_id == season_id)
     res = db.session.execute(stmt).scalars().all()
 
     return render_template("wklb/results.html", rows=res, form=form)
@@ -172,3 +212,15 @@ def about():
 def news():
     url = "https://p624608.webspaceconfig.de/wklbBoard/portal.php"
     return dynamicContent(url, "News")
+
+@bp.route("/admin", methods=["GET", "POST"])
+@basic_auth.required
+def admin():
+    form = adminSeason_form()
+
+    if form.validate_on_submit():
+        new_season = Season(name=form.name.data)
+        db.session.add(new_season)
+        db.session.commit()
+
+    return render_template("wklb/admin.html", form=form)
