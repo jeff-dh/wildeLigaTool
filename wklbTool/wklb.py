@@ -222,5 +222,6 @@ def admin():
         new_season = Season(name=form.name.data)
         db.session.add(new_season)
         db.session.commit()
+        return redirect(url_for("wklb.standings"))
 
     return render_template("wklb/admin.html", form=form)
